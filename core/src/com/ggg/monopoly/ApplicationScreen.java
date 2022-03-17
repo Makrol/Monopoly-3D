@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -12,14 +13,17 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -27,71 +31,34 @@ public class ApplicationScreen implements Screen {
     private Environment environment;
     private Engine parent;
     private PerspectiveCamera cam;
-    private Model cube;
-    private ModelInstance cubeInstance;
+    private Model model;
+    private ModelInstance modelInstance;
     private ModelBatch modelBatch;
     private CameraInputController cameraInputController;
     private Table table;
-    private TextButton newGameButton;
+    private TextButton backButton;
     private Stage stage;
-
-    public ApplicationScreen(Engine engine){
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight,0.4f,0.4f,0.4f,1f));
-        environment.add(new DirectionalLight().set(0.8f,0.8f,0.8f,-1f,-0.8f,-0.2f));
-
+    private Skin guiSkin;
+    private InputMultiplexer multiplexer;
+    private ModelBuilder modelBuilder;
+    private ModelLoader modelLoader;
+    public ApplicationScreen(Engine engine,Skin guiSkin){
         parent = engine;
-        modelBatch = new ModelBatch();
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        cam.position.set(10f,10f,10f);
-        cam.lookAt(0,0,0);
-        cam.near = 1f;
-        cam.far = 300f;
-        cam.update();
+        this.guiSkin=guiSkin;
 
-        ModelBuilder modelBuilder = new ModelBuilder();
-        cube = modelBuilder.createBox(5f,5f,5f,
-                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-                VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal);
-        cubeInstance = new ModelInstance(cube);
-        cameraInputController = new CameraInputController(cam);
-        cameraInputController.translateButton= Input.Keys.UNKNOWN;
-////////////////////////////////////
-
-        stage = new Stage(new ScreenViewport());
-
+        createObjects();
+        environmentConfiguration();
+        cameraConfiguration();
+        loading3dObjects();
+        creatingButtons();
+        inputDataConfiguration();
+        addButtonsActions();
     }
     @Override
     public void show() {
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
-
-        table = new Table();
-        table.setFillParent(true);
-        table.setDebug(true);
-        stage.addActor(table);
-
-        Skin skin = new Skin(Gdx.files.internal("skins/glassy-ui.json"));
-        newGameButton = new TextButton("Back", skin);
-        table.add(newGameButton).fillX().uniformX();
-
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(stage);
-        multiplexer.addProcessor(cameraInputController);
-
         Gdx.input.setInputProcessor(multiplexer);
-
-        newGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.changeScreen(Engine.MENU);
-            }
-        });
-
-       //newGameButton.addListener((event) -> {
-       //    parent.changeScreen(Engine.MENU);
-       //    return false;
-       //});
     }
 
     @Override
@@ -102,12 +69,10 @@ public class ApplicationScreen implements Screen {
         Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT|GL20.GL_DEPTH_BUFFER_BIT);
 
-
         modelBatch.begin(cam);
-        modelBatch.render(cubeInstance,environment);
+        modelBatch.render(modelInstance,environment);
         modelBatch.end();
         stage.draw();
-
     }
 
     @Override
@@ -131,7 +96,55 @@ public class ApplicationScreen implements Screen {
 
     @Override
     public void dispose() {
-        cube.dispose();
         modelBatch.dispose();
+        model.dispose();
+    }
+    private void addButtonsActions(){
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.changeScreen(Engine.MENU);
+            }
+        });
+    }
+    private void createObjects(){
+        multiplexer = new InputMultiplexer();
+        table = new Table();
+        modelBatch = new ModelBatch();
+        stage = new Stage(new ScreenViewport());
+        environment = new Environment();
+        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        modelLoader = new ObjLoader();
+        modelBuilder = new ModelBuilder();
+        backButton = new TextButton("Back", guiSkin);
+    }
+    private void cameraConfiguration(){
+        cam.position.set(0f,10f,0f);
+        cam.lookAt(0,0,0);
+        cam.near = 1f;
+        cam.far = 300f;
+        cam.update();
+        cameraInputController = new CameraInputController(cam);
+        cameraInputController.translateButton= Input.Keys.UNKNOWN;
+    }
+    private void environmentConfiguration(){
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight,0.4f,0.4f,0.4f,1f));
+        environment.add(new DirectionalLight().set(0.8f,0.8f,0.8f,-1f,-0.8f,-0.2f));
+    }
+    private void loading3dObjects(){
+        model = modelLoader.loadModel(Gdx.files.internal("plansza/plansza.obj"));
+        modelInstance = new ModelInstance(model);
+        modelInstance.transform.translate(new Vector3(0.0f,0.0f,0.0f));
+    }
+    private void creatingButtons(){
+        table.setFillParent(true);
+        table.setDebug(true);
+        stage.addActor(table);
+        table.align(Align.topRight);
+        table.add(backButton).fillX().uniformX();
+    }
+    private void inputDataConfiguration(){
+        multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(cameraInputController);
     }
 }

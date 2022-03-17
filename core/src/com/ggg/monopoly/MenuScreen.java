@@ -2,6 +2,7 @@ package com.ggg.monopoly;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,18 +19,18 @@ public class MenuScreen implements Screen {
     private TextButton newGameButton;
     private TextButton settingsButton;
     private TextButton exitButton;
+    private Skin guiSkin;
 
-    public MenuScreen(Engine engine){
+    public MenuScreen(Engine engine, Skin guiSkin){
         parent = engine;
+        this.guiSkin=guiSkin;
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
-
     }
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         createButtons();
         addButtonsActions();
-        enableButtons();
 
     }
 
@@ -64,7 +65,6 @@ public class MenuScreen implements Screen {
 
     @Override
     public void dispose() {
-        System.out.println("koniec");
         stage.dispose();
     }
     private void update(){
@@ -78,16 +78,14 @@ public class MenuScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
         table.setDebug(true);
+
         stage.addActor(table);
 
+        table.setBackground(guiSkin.getDrawable("pale-blue"));
+        newGameButton = new TextButton("New Game", guiSkin);
+        settingsButton = new TextButton("Settings", guiSkin);
+        exitButton = new TextButton("Exit", guiSkin);
 
-
-
-        Skin skin = new Skin(Gdx.files.internal("skins/glassy-ui.json"));
-
-        newGameButton = new TextButton("New Game", skin);
-        settingsButton = new TextButton("Settings", skin);
-        exitButton = new TextButton("Exit", skin);
 
 
         table.add(newGameButton).fillX().uniformX();
@@ -101,7 +99,6 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.changeScreen(Engine.APPLICATION);
-                disableButtons();
             }
         });
 
@@ -109,7 +106,6 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.changeScreen(Engine.SETTINGS);
-                disableButtons();
             }
         });
 
@@ -121,15 +117,5 @@ public class MenuScreen implements Screen {
         });
 
     }
-    private void disableButtons()
-    {
-        newGameButton.setDisabled(true);
-        settingsButton.setDisabled(true);
-        exitButton.setDisabled(true);
-    }
-    public void enableButtons(){
-        newGameButton.setDisabled(false);
-        settingsButton.setDisabled(false);
-        exitButton.setDisabled(false);
-    }
+
 }
