@@ -1,35 +1,38 @@
 package com.ggg.monopoly;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 
 public class Engine extends Game {
-	private LoadingScreen loadingScreen;
+	private NewGameScreen loadingScreen;
 	public MenuScreen menuScreen;
 	private SettingsScreen settingsScreen;
 	private ApplicationScreen applicationScreen;
+	private NewGameScreen newGameScreen;
 	private Skin guiSkin;
 
 	public final static int MENU =0;
 	public final static int SETTINGS =1;
 	public final static int APPLICATION =2;
-	public final static int LOADING =3;
+	public final static int NEWGAME =3;
 	private Screen currentScreen;
+	private Boolean debugMode;
+
+	public Sound buttonSound;
 
 	@Override
 	public void create () {
-		guiSkin= new Skin(Gdx.files.internal("skins/glassy-ui.json"));
-		loadingScreen = new LoadingScreen(this);
-		currentScreen = loadingScreen;
-		setScreen(loadingScreen);
+		buttonSound = Gdx.audio.newSound(Gdx.files.internal("sounds/button-click.mp3"));
+
+		debugMode = new Boolean(false);
+		guiSkin= new Skin(Gdx.files.internal("skins/guiSkin.json"));
+		menuScreen= new MenuScreen(this,guiSkin);
+		currentScreen = menuScreen;
+		setScreen(menuScreen);
 	}
 
 	@Override
@@ -50,9 +53,14 @@ public class Engine extends Game {
 				this.setScreen(menuScreen);
 				break;
 			case SETTINGS:
-				if(settingsScreen == null) settingsScreen = new SettingsScreen(this,guiSkin);
+				if(settingsScreen == null) settingsScreen = new SettingsScreen(this,guiSkin,debugMode);
 				currentScreen = settingsScreen;
 				this.setScreen(settingsScreen);
+				break;
+			case NEWGAME:
+				if(newGameScreen == null) newGameScreen = new NewGameScreen(this,guiSkin);
+				currentScreen = newGameScreen;
+				this.setScreen(newGameScreen);
 				break;
 			case APPLICATION:
 				if(applicationScreen == null) applicationScreen = new ApplicationScreen(this,guiSkin);

@@ -5,11 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -25,9 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class ApplicationScreen implements Screen {
+public class ApplicationScreen implements Screen,BasicFunctions {
     private Environment environment;
     private Engine parent;
     private PerspectiveCamera cam;
@@ -42,28 +38,29 @@ public class ApplicationScreen implements Screen {
     private InputMultiplexer multiplexer;
     private ModelBuilder modelBuilder;
     private ModelLoader modelLoader;
+
+    private final Pawn pawn;
     public ApplicationScreen(Engine engine,Skin guiSkin){
         parent = engine;
         this.guiSkin=guiSkin;
-
+        pawn = new Pawn();
         createObjects();
         environmentConfiguration();
         cameraConfiguration();
         loading3dObjects();
-        creatingButtons();
+        createButtons();
         inputDataConfiguration();
-        addButtonsActions();
+        tableAndStageConfiguration();
+        addButtonActions();
     }
     @Override
     public void show() {
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
-        Gdx.input.setInputProcessor(multiplexer);
+        inputDataConfiguration();
     }
 
     @Override
     public void render(float delta) {
-
+        pawn.move();
         cameraInputController.update();
 
         Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -71,6 +68,7 @@ public class ApplicationScreen implements Screen {
 
         modelBatch.begin(cam);
         modelBatch.render(modelInstance,environment);
+        pawn.render(modelBatch,environment);
         modelBatch.end();
         stage.draw();
     }
@@ -99,15 +97,8 @@ public class ApplicationScreen implements Screen {
         modelBatch.dispose();
         model.dispose();
     }
-    private void addButtonsActions(){
-        backButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                parent.changeScreen(Engine.MENU);
-            }
-        });
-    }
-    private void createObjects(){
+    @Override
+    public void createObjects(){
         multiplexer = new InputMultiplexer();
         table = new Table();
         modelBatch = new ModelBatch();
@@ -116,7 +107,6 @@ public class ApplicationScreen implements Screen {
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         modelLoader = new ObjLoader();
         modelBuilder = new ModelBuilder();
-        backButton = new TextButton("Back", guiSkin);
     }
     private void cameraConfiguration(){
         cam.position.set(0f,10f,0f);
@@ -132,19 +122,39 @@ public class ApplicationScreen implements Screen {
         environment.add(new DirectionalLight().set(0.8f,0.8f,0.8f,-1f,-0.8f,-0.2f));
     }
     private void loading3dObjects(){
-        model = modelLoader.loadModel(Gdx.files.internal("plansza/plansza.obj"));
+        model = modelLoader.loadModel(Gdx.files.internal("plansza/board.obj"));
         modelInstance = new ModelInstance(model);
         modelInstance.transform.translate(new Vector3(0.0f,0.0f,0.0f));
     }
-    private void creatingButtons(){
+    @Override
+    public void createButtons(){
+        backButton = new TextButton("Back", guiSkin);
+
+    }
+    @Override
+    public void inputDataConfiguration(){
+        multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(cameraInputController);
+    }
+
+    @Override
+    public void addButtonActions() {
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //parent.changeScreen(Engine.MENU);
+                //test///////////////////////
+                pawn.startMove();
+            }
+        });
+    }
+
+    @Override
+    public void tableAndStageConfiguration() {
         table.setFillParent(true);
         table.setDebug(true);
         stage.addActor(table);
         table.align(Align.topRight);
         table.add(backButton).fillX().uniformX();
-    }
-    private void inputDataConfiguration(){
-        multiplexer.addProcessor(stage);
-        multiplexer.addProcessor(cameraInputController);
     }
 }
