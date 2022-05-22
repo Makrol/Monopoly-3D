@@ -14,10 +14,21 @@ import com.badlogic.gdx.utils.TimeUtils;
 import java.util.concurrent.TimeUnit;
 
 public class Pawn {
+    private static Vector3 startPos1 = new Vector3(18.5f,0.7f,18.5f);
+    //private static Vector3 startPos2 = new Vector3(16.923f,0.7f,16.923f);
+    private static Vector3 startPos2 = new Vector3(17.5f,0.7f,17.5f);
+    private static Vector3 startPos3 = new Vector3(16.5f,0.7f,16.5f);
+    private static Vector3 startPos4 = new Vector3(15.5f,0.7f,15.5f);
+
+
     private Model pawn;
     private ModelInstance pawnInstance;
+    private final float currentBigJump;
     private static final float smallJumpValues = 3.077f;
-    private static final float bigJumpValues = 4.6155f;
+    private static final float bigJumpValues1 = 6.1925f;
+    private static final float bigJumpValues2 = 5.1925f;
+    private static final float bigJumpValues3 = 4.1925f;
+    private static final float bigJumpValues4 = 3.1925f;
     private float currentJumpValues;
     private Integer currentFiledIndex;
     private  enum Direction {negativeX,positiveY,positiveX,negativeY};
@@ -25,17 +36,49 @@ public class Pawn {
     private static final float speed=3f;
     private boolean isMove;
     private float moveProgress;
-    public Pawn(){
+    private Integer moveCounter;
+
+    public boolean isMove() {
+        return isMove;
+    }
+
+    public Pawn(int num){
+        moveCounter = 0;
+        switch (num){
+            case 1:
+                currentBigJump=bigJumpValues1;
+                break;
+            case 2:
+                currentBigJump=bigJumpValues2;
+                break;
+            case 3:
+                currentBigJump=bigJumpValues3;
+                break;
+            case 4:
+                currentBigJump=bigJumpValues4;
+                break;
+            default:
+                currentBigJump=0f;
+        }
         isMove = false;
         moveProgress = 0f;
-        currentJumpValues = bigJumpValues;
+        currentJumpValues = currentBigJump;
         currentFiledIndex = 0;
         currenDirection = Direction.negativeX;
         ModelLoader loader = new ObjLoader();
         pawn = loader.loadModel(Gdx.files.internal("pawns/pawn.obj"));
         pawnInstance = new ModelInstance(pawn);
-        pawnInstance.transform.translate(16.923f,0.7f,16.923f);
-       // moveToNextField();
+        if(num == 1){
+            pawnInstance.transform.translate(startPos1);
+        }else if(num == 2){
+            pawnInstance.transform.translate(startPos2);
+        }
+        else if(num == 3){
+            pawnInstance.transform.translate(startPos3);
+        }
+        else if(num == 4){
+            pawnInstance.transform.translate(startPos4);
+        }
     }
     public void render(ModelBatch bath, Environment environment){
         bath.render(pawnInstance,environment);
@@ -48,7 +91,7 @@ public class Pawn {
 
         //Update move values
         if(currentFiledIndex%10==0||(currentFiledIndex+1)%10==0)
-            currentJumpValues = bigJumpValues;
+            currentJumpValues = currentBigJump;
         else
             currentJumpValues = smallJumpValues;
 
@@ -80,7 +123,14 @@ public class Pawn {
             if(moveProgress==currentJumpValues){
                 moveProgress = 0f;
                 moveDataUpdate();
-                isMove = false;
+                moveCounter--;
+                if(moveCounter==0) {
+                    isMove = false;
+
+                    GameActionWindow.showWindow();
+                    ApplicationScreen.actionWindow.loadData();
+                    return;
+                }
             }else{
                 float deltaTime = Gdx.graphics.getDeltaTime();
                 float moveValues = deltaTime*speed;
@@ -105,5 +155,17 @@ public class Pawn {
                 }
             }
         }
+    }
+
+    public Integer getMoveCounter() {
+        return moveCounter;
+    }
+
+    public void setMoveCounter(Integer moveCounter) {
+        this.moveCounter = moveCounter;
+    }
+
+    public Integer getCurrentFiledIndex() {
+        return currentFiledIndex;
     }
 }

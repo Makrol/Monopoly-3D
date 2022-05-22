@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+import java.util.Vector;
+
 
 public class Engine extends Game {
 	private NewGameScreen loadingScreen;
@@ -13,7 +15,9 @@ public class Engine extends Game {
 	private SettingsScreen settingsScreen;
 	private ApplicationScreen applicationScreen;
 	private NewGameScreen newGameScreen;
-	private Skin guiSkin;
+	static private Skin guiSkin;
+	static Integer playerNumber=0;
+	static Vector<String> playerNames = new Vector<>();
 
 	public final static int MENU =0;
 	public final static int SETTINGS =1;
@@ -28,8 +32,8 @@ public class Engine extends Game {
 	public void create () {
 		buttonSound = Gdx.audio.newSound(Gdx.files.internal("sounds/button-click.mp3"));
 
-		debugMode = new Boolean(false);
-		guiSkin= new Skin(Gdx.files.internal("skins/guiSkin.json"));
+		debugMode = false;
+		guiSkin= new Skin(Gdx.files.internal("skins/guiSkin/guiSkin.json"));
 		menuScreen= new MenuScreen(this,guiSkin);
 		currentScreen = menuScreen;
 		setScreen(menuScreen);
@@ -67,5 +71,8 @@ public class Engine extends Game {
 				currentScreen = applicationScreen;
 				this.setScreen(applicationScreen);
 		}
+	}
+	static public Skin getGuiSkin(){
+		return guiSkin;
 	}
 }

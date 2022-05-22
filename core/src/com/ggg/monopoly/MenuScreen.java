@@ -31,16 +31,21 @@ class MenuScreen implements Screen,BasicFunctions {
     }
     @Override
     public void show() {
+
+
         inputDataConfiguration();
+
     }
 
     @Override
     public void render(float delta) {
+
         update();
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
+
     }
 
     @Override

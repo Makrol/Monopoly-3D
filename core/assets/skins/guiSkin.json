@@ -94,6 +94,12 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 		fontColor: white
 	}
 }
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	default: {
+		up: imgbuttonup
+		down: imgbuttondown
+	}
+}
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
 		font: ConcertOne
