@@ -2,9 +2,8 @@ package com.ggg.monopoly;
 
 
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Null;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class GameActionWindow {
@@ -14,20 +13,25 @@ public class GameActionWindow {
 
     private TextButton buyButton;
 
+    private TextButton payFineButton;
+
     private ApplicationScreen applicationScreen;
 
     private Table table;
     private Label title;
     private Label owner;
     private Label price;
-    //private TextArea text;
+
+    private Label fine;
 
     private Label text;
 
     private Table buttonTab;
 
 
-    private Slider numberOfFields;
+    private TextButton giveUpButton;
+
+    static Integer specialCardIndex=0;
 
     GameActionWindow(ApplicationScreen applicationScreen){
 
@@ -36,6 +40,8 @@ public class GameActionWindow {
         window = new Window("",skin);
         exitButton = new TextButton("Zamknij",skin);
         buyButton = new TextButton("Kup",skin);
+        payFineButton = new TextButton("Zaplac\nkare",skin);
+        giveUpButton = new TextButton("Poddaj sie",skin);
        // window.add(exitButton);
         //window.align(Align.center);
         window.setVisible(false);
@@ -56,42 +62,89 @@ public class GameActionWindow {
     static public void showWindow(){
         window.setVisible(true);
     }
+
     public void loadData(){
+
+
         int playerPos = applicationScreen.getActivePlayer().getPawn().getCurrentFiledIndex();
-        if(ApplicationScreen.setOfFields.get(playerPos).getFieldType()==Field.type.normalField||
-                ApplicationScreen.setOfFields.get(playerPos).getFieldType()==Field.type.winFields
+        System.out.println("dziala"+playerPos);
+        Field currentField = ApplicationScreen.setOfFields.get(playerPos);
+        if(currentField.getFieldType()==Field.type.parking||currentField.getFieldType()==Field.type.start){
+            applicationScreen.getRandButton().setDisabled(false);
+            applicationScreen.nextPlayer();
+        }
+
+        if(currentField.getFieldType()==Field.type.start){
+
+            window.setVisible(false);
+            return;
+        }
+
+
+        if(currentField.getFieldType()==Field.type.normalField&&currentField.getOwner()!=null){
+            if(currentField.getOwner()==applicationScreen.getActivePlayer())
+                return;
+            title.setVisible(true);
+            title.setText(currentField.getTitle());
+            text.setVisible(false);
+            owner.setVisible(true);
+            owner.setText("wlasciciel: "+currentField.getOwner().getName());
+            price.setVisible(true);
+            price.setText("cena: "+currentField.getPrice()*1.8);
+            buyButton.setVisible(true);
+            buyButton.setDisabled(false);
+            payFineButton.setDisabled(false);
+            payFineButton.setVisible(true);
+            exitButton.setVisible(false);
+            exitButton.setDisabled(true);
+            fine.setVisible(true);
+            fine.setText("kara: "+currentField.getPrice());
+            giveUpButton.setVisible(true);
+            giveUpButton.setDisabled(false);
+            return;
+        }
+        payFineButton.setDisabled(true);
+        payFineButton.setVisible(false);
+        fine.setVisible(false);
+        giveUpButton.setVisible(false);
+        giveUpButton.setDisabled(true);
+
+        if(currentField.getFieldType()==Field.type.normalField|| currentField.getFieldType()==Field.type.winFields
                 ){
             owner.setVisible(true);
-            title.setText(ApplicationScreen.setOfFields.get(playerPos).getTitle());
-            if(ApplicationScreen.setOfFields.get(playerPos).getOwner()== null){
+            title.setText(currentField.getTitle());
+            if(currentField.getOwner()== null){
                 owner.setText("Wlasciciel: brak");
             }
             else{
-                owner.setText("Wlasciciel: "+ApplicationScreen.setOfFields.get(playerPos).getOwner().getName());
+                owner.setText("Wlasciciel: "+currentField.getOwner().getName());
             }
-            price.setText("Cena: "+ApplicationScreen.setOfFields.get(playerPos).getPrice());
+            price.setText("Cena: "+currentField.getPrice());
             text.setVisible(false);
             price.setVisible(true);
             title.setVisible(true);
             buyButton.setVisible(true);
             buyButton.setDisabled(false);
-        }else if (ApplicationScreen.setOfFields.get(playerPos).getFieldType()==Field.type.wycieczka){
-            title.setText(ApplicationScreen.setOfFields.get(playerPos).getTitle());
-            owner.setVisible(false);
-            buyButton.setVisible(false);
-            price.setVisible(false);
-            text.setVisible(false);
-        }else if (ApplicationScreen.setOfFields.get(playerPos).getFieldType()==Field.type.start){
+        }else if (currentField.getFieldType()==Field.type.trip){
             window.setVisible(false);
-        }else if(ApplicationScreen.setOfFields.get(playerPos).getFieldType()==Field.type.twoOfThem){
+            applicationScreen.getActivePlayer().updateMoney((int) (-0.5* applicationScreen.getActivePlayer().getMoney()));
+            applicationScreen.getActivePlayer().move(20);
+
+        }else if (currentField.getFieldType()==Field.type.start){
+            window.setVisible(false);
+
+        }else if(currentField.getFieldType()==Field.type.twoOfThem){
             owner.setVisible(true);
             title.setText(ApplicationScreen.setOfFields.get(playerPos).getTitle());
-            price.setText("Cena: "+ApplicationScreen.setOfFields.get(playerPos).getPrice());
+            price.setText("Cena: "+currentField.getPrice());
             text.setVisible(false);
-        }else if(ApplicationScreen.setOfFields.get(playerPos).getFieldType()==Field.type.specialCard){
+            exitButton.setDisabled(false);
+            exitButton.setVisible(true);
 
-            //int tmp =new Random().nextInt(13);
-            int tmp =5;
+        }else if(currentField.getFieldType()==Field.type.specialCard){
+
+            int tmp =new Random().nextInt(13);
+            specialCardIndex = tmp;
             text.setVisible(true);
             text.setText(ApplicationScreen.setOfCards.get(tmp).getTitle());
             owner.setVisible(false);
@@ -99,52 +152,42 @@ public class GameActionWindow {
             title.setVisible(false);
             buyButton.setVisible(false);
             buyButton.setDisabled(true);
+            exitButton.setDisabled(false);
+            exitButton.setVisible(true);
 
             SpecialCard specialTmp = ApplicationScreen.setOfCards.get(tmp);
 
             if(specialTmp.getMoneyFrom()==SpecialCard.fromOp.fromBank&&specialTmp.getMoneyTo()==SpecialCard.toOp.toMe){
                 applicationScreen.getActivePlayer().updateMoney(specialTmp.getMoneyChange());
-                 for(PlayerInfoTable plInf :applicationScreen.getPlayersInfoList()){
-                     if(plInf.getPlayer()==applicationScreen.getActivePlayer()){
-                         plInf.setMoneyInfo(applicationScreen.getActivePlayer().getMoney());
-                     }
-                 }
             }
             else if(specialTmp.getMoneyFrom()==SpecialCard.fromOp.fromEveryone&&specialTmp.getMoneyTo()==SpecialCard.toOp.toMe) {
                 applicationScreen.getActivePlayer().updateMoney(specialTmp.getMoneyChange()*(Engine.playerNumber-1));
                 for (Player pl : applicationScreen.getPlayersList()) {
                     if (pl != applicationScreen.getActivePlayer())
                         pl.updateMoney(-specialTmp.getMoneyChange());
-                    for (PlayerInfoTable plInf : applicationScreen.getPlayersInfoList()) {
-                        if(plInf.getPlayer()==null)
-                            continue;
-                        if(plInf.getPlayer()==pl)
-                        plInf.setMoneyInfo(pl.getMoney());
-                    }
                 }
             }
             else if(specialTmp.getMoneyFrom()==SpecialCard.fromOp.fromMe&&specialTmp.getMoneyTo()==SpecialCard.toOp.toBank){
                 applicationScreen.getActivePlayer().updateMoney(specialTmp.getMoneyChange());
-                for(PlayerInfoTable plInf :applicationScreen.getPlayersInfoList()){
-                    if(plInf.getPlayer()==applicationScreen.getActivePlayer()){
-                        plInf.setMoneyInfo(applicationScreen.getActivePlayer().getMoney());
-                    }
-                }
-
             }
 
-        }else if(ApplicationScreen.setOfFields.get(playerPos).getFieldType()==Field.type.tax){
+        }else if(currentField.getFieldType()==Field.type.tax){
             title.setText(ApplicationScreen.setOfFields.get(playerPos).getTitle());
             owner.setVisible(false);
-            price.setText("Podatek: "+ApplicationScreen.setOfFields.get(playerPos).getPrice());
+            price.setText("Podatek: "+currentField.getPrice());
             buyButton.setVisible(false);
             buyButton.setDisabled(true);
             exitButton.setVisible(true);
             exitButton.setDisabled(false);
             text.setVisible(false);
             title.setVisible(true);
-        }else if(ApplicationScreen.setOfFields.get(playerPos).getFieldType()==Field.type.polibus){
-
+            applicationScreen.getActivePlayer().updateMoney(-ApplicationScreen.setOfFields.get(playerPos).getPrice());
+        }else if(currentField.getFieldType()==Field.type.polibus){
+            int tmp =new Random().nextInt(19);
+            applicationScreen.getActivePlayer().move(tmp);
+            window.setVisible(false);
+        }else if(currentField.getFieldType()==Field.type.parking){
+            window.setVisible(false);
         }
 
 
@@ -156,21 +199,23 @@ public class GameActionWindow {
        // text.setSize(400,400);
         table = new Table(skin);
         table.pad(70);
-        table.setDebug(true);
+        table.padTop(100);
+        //table.setDebug(true);
         title = new Label("To jetst napis",skin);
         owner = new Label("wlasciciel: ",skin);
         price = new Label("cena: ",skin);
+        fine = new Label("kara: ",skin);
 
-        //numberOfFields = new Slider(1,39,)
 
         buttonTab.add(buyButton);
         buttonTab.add(exitButton);
+        buttonTab.add(payFineButton);
 
         window.add(table);
 
         table.row();
         table.row();
-        table.add(title);
+        table.add(title).padTop(20);
         table.row();
         table.add(text);
         table.row();
@@ -178,11 +223,75 @@ public class GameActionWindow {
         table.row();
         table.add(price);
         table.row();
+        table.add(fine);
+        table.row();
         table.add(buttonTab);
-        //table.add(exitButton);
-        //table.add(buyButton);
+        table.row();
+        table.add(giveUpButton).padTop(10);
 
 
 
+
+    }
+
+    public TextButton getPayFineButton() {
+        return payFineButton;
+    }
+
+    public TextButton getGiveUpButton() {
+        return giveUpButton;
+    }
+
+    public void showWinWindow(Player player){
+
+        title.setText("Koniec Gry! \nWygral gracz: "+player.getName());
+        configWinWindow();
+
+    }
+    public void showWinWindow(){
+
+        title.setText("Koniec Gry! \nWygral gracz: "+findWinner().getName());
+        configWinWindow();
+
+    }
+    private void configWinWindow(){
+        window.setVisible(true);
+        title.setVisible(true);
+        text.setVisible(false);
+        owner.setVisible(false);
+        price.setVisible(false);
+        fine.setVisible(false);
+        giveUpButton.setDisabled(true);
+        giveUpButton.setVisible(false);
+
+        payFineButton.setDisabled(true);
+        payFineButton.setVisible(false);
+
+        buyButton.setDisabled(true);
+        buyButton.setVisible(false);
+    }
+
+    private Player findWinner(){
+        ArrayList<Integer> playerSum = new ArrayList<>();
+        int tmp =0;
+        for(int i=0;i<Engine.playerNumber;i++){
+            tmp=0;
+            for(Field f:ApplicationScreen.setOfFields){
+                if(f.getOwner()==applicationScreen.getPlayersList().get(i))
+                {
+                   tmp+=f.getPrice();
+                }
+            }
+            tmp+=applicationScreen.getPlayersList().get(i).getMoney();
+            playerSum.add(tmp);
+
+        }
+        int index=0;
+        for(int i=0;i<Engine.playerNumber;i++){
+            if(playerSum.get(i)>playerSum.get(index)){
+                index=i;
+            }
+        }
+        return applicationScreen.getPlayersList().get(index);
     }
 }

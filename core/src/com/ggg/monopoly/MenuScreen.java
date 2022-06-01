@@ -24,7 +24,7 @@ class MenuScreen implements Screen,BasicFunctions {
         parent = engine;
         this.guiSkin=guiSkin;
         createObjects();
-        createButtons();
+        createButtonsAndLabels();
         tableAndStageConfiguration();
         addButtonActions();
 
@@ -77,7 +77,7 @@ class MenuScreen implements Screen,BasicFunctions {
 
     }
     @Override
-    public void createButtons()
+    public void createButtonsAndLabels()
     {
         newGameButton = new TextButton("New Game", guiSkin);
         settingsButton = new TextButton("Settings", guiSkin);
@@ -125,7 +125,7 @@ class MenuScreen implements Screen,BasicFunctions {
     @Override
     public void tableAndStageConfiguration(){
         table.setFillParent(true);
-        table.setDebug(true);
+
         stage.addActor(table);
         table.setBackground(guiSkin.getDrawable("pale-blue"));
         table.add(newGameButton).fillX().uniformX();

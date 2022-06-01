@@ -13,9 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.awt.*;
-import java.util.ArrayList;
-
 public class NewGameScreen implements Screen,BasicFunctions {
 
     private Engine parent;
@@ -42,7 +39,7 @@ public class NewGameScreen implements Screen,BasicFunctions {
         this.guiSkin = guiSkin;
         parent = engine;
         createObjects();
-        createButtons();
+        createButtonsAndLabels();
         tableAndStageConfiguration();
         addButtonActions();
     }
@@ -94,7 +91,7 @@ public class NewGameScreen implements Screen,BasicFunctions {
     }
 
     @Override
-    public void createButtons() {
+    public void createButtonsAndLabels() {
         window = new Window("",guiSkin);
         twoPlayers = new CheckBox("2 players",guiSkin);
         twoPlayers.setName("two");
@@ -180,10 +177,10 @@ public class NewGameScreen implements Screen,BasicFunctions {
     @Override
     public void tableAndStageConfiguration(){
         table.setFillParent(true);
-        //table.setDebug(true);
+
         stage.addActor(table);
         table.add(window);
-        window.setDebug(true);
+
         //table.add(backButton).fillX().uniformX().align(Align.top);
         //table.add(title);
 

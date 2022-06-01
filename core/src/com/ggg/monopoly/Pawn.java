@@ -33,16 +33,23 @@ public class Pawn {
     private Integer currentFiledIndex;
     private  enum Direction {negativeX,positiveY,positiveX,negativeY};
     private Direction currenDirection;
-    private static final float speed=3f;
+    private static final float speed=15f;
     private boolean isMove;
     private float moveProgress;
     private Integer moveCounter;
+
+    private boolean visable;
 
     public boolean isMove() {
         return isMove;
     }
 
-    public Pawn(int num){
+    private Player parent;
+
+    public Pawn(int num,Model pawnModel,Player parent){
+        this.parent = parent;
+        visable =true;
+        this.pawn = pawnModel;
         moveCounter = 0;
         switch (num){
             case 1:
@@ -65,8 +72,8 @@ public class Pawn {
         currentJumpValues = currentBigJump;
         currentFiledIndex = 0;
         currenDirection = Direction.negativeX;
-        ModelLoader loader = new ObjLoader();
-        pawn = loader.loadModel(Gdx.files.internal("pawns/pawn.obj"));
+        //ModelLoader loader = new ObjLoader();
+        //pawn = loader.loadModel(Gdx.files.internal("pawns/blue_pawn.obj"));
         pawnInstance = new ModelInstance(pawn);
         if(num == 1){
             pawnInstance.transform.translate(startPos1);
@@ -81,13 +88,18 @@ public class Pawn {
         }
     }
     public void render(ModelBatch bath, Environment environment){
-        bath.render(pawnInstance,environment);
+        if(visable)
+            bath.render(pawnInstance,environment);
     }
     private void moveDataUpdate(){
         //Increment position index
         currentFiledIndex++;
         if(currentFiledIndex>39)
+        {
             currentFiledIndex=0;
+            parent.updateMoney(200);
+        }
+
 
         //Update move values
         if(currentFiledIndex%10==0||(currentFiledIndex+1)%10==0)
@@ -167,5 +179,13 @@ public class Pawn {
 
     public Integer getCurrentFiledIndex() {
         return currentFiledIndex;
+    }
+
+    public void setCurrentFiledIndex(Integer currentFiledIndex) {
+        this.currentFiledIndex = currentFiledIndex;
+    }
+
+    public void setPawnVisable(boolean val){
+        visable=val;
     }
 }

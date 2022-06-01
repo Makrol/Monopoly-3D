@@ -5,8 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -16,6 +18,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -23,7 +26,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class ApplicationScreen implements Screen,BasicFunctions {
@@ -44,6 +51,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
     private Table bottomRightTable;
     private Table centerTable;
     private Table topTable;
+
+    private ModelInstance pyramidModel;
+
+
     private TextButton backButton;
     private Stage stage;
     private Skin guiSkin;
@@ -57,8 +68,36 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
     private TextButton randButton;
 
+    private HashMap<Integer,ModelInstance> cubeInstance;
+
+    private ArrayList<Model> pawnsModels;
+
+    private HashMap<Integer, Vector3> cubePos;
+
+    private ModelInstance routerModel;
+
+    private  Table bottomCenterTable;
+
+    private Label counterLabel;
+
+    private LocalDateTime startTime;
+    private LocalDateTime currentTime;
+
+    private Integer minutes;
+    private Integer seconds;
+
+    private Boolean timerRun;
+
+
+
 
     public ApplicationScreen(Engine engine,Skin guiSkin){
+
+        createCubes();
+        createCubePos();
+        initCubePos();
+
+        loadPawnModels();
         initSetOfCards();
         initFields();
         parent = engine;
@@ -68,9 +107,15 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         environmentConfiguration();
         cameraConfiguration();
         loading3dObjects();
-        createButtons();
+        createButtonsAndLabels();
         tableAndStageConfiguration();
         addButtonActions();
+
+/*
+
+        cubeModel.set(0,new ModelBuilder().createBox(5f,5f,5f,new Material(ColorAttribute.createDiffuse(Color.BLUE)),
+                VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal));
+        cubeInstance.set(0,new ModelInstance(cubeModel.get(0)));*/
     }
     @Override
     public void show() {
@@ -80,16 +125,24 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
     @Override
     public void render(float delta) {
-
+        updateTimer();
         cameraInputController.update();
 
         Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT|GL20.GL_DEPTH_BUFFER_BIT);
-        Gdx.gl.glClearColor(0.0902f,0.5490f,0.7098f,0);
+        Gdx.gl.glClearColor(0.537f,0.847f,0.902f,0);
+
+
 
         modelBatch.begin(cam);
         modelBatch.render(modelInstance,environment);
         modelBatch.render(schoolInstance,environment);
+        modelBatch.render(pyramidModel,environment);
+        modelBatch.render(routerModel,environment);
+
+        for(Map.Entry<Integer,ModelInstance> set:cubeInstance.entrySet()){
+            modelBatch.render(set.getValue(),environment);
+        }
 
         for(Player p:playersList){
 
@@ -126,7 +179,18 @@ public class ApplicationScreen implements Screen,BasicFunctions {
     }
     @Override
     public void createObjects(){
+
+        timerRun = true;
+
+        startTime = LocalDateTime.now();
+        currentTime = LocalDateTime.now();
+
+
+
+        System.out.println(ChronoUnit.SECONDS.between(startTime,currentTime));
+
         actionWindow = new GameActionWindow(this);
+
 
         addPlayers();
         playersInfoList = new ArrayList<>();
@@ -150,6 +214,11 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
         centerTable = new Table();
         centerTable.setFillParent(true);
+
+        bottomCenterTable = new Table();
+        bottomCenterTable.setFillParent(true);
+
+
 
         modelBatch = new ModelBatch();
         stage = new Stage(new ScreenViewport());
@@ -187,7 +256,7 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
     }
     private void cameraConfiguration(){
-        cam.position.set(0f,10f,0f);
+        cam.position.set(0f,10f,30f);
         cam.lookAt(0,0,0);
         cam.near = 1f;
         cam.far = 300f;
@@ -209,11 +278,21 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
         schoolInstance = new ModelInstance(school);
         schoolInstance.transform.translate(0,1.5f,0);
+
+        pyramidModel = new ModelInstance(modelLoader.loadModel(Gdx.files.internal("piramida/pyramid.obj")));
+        pyramidModel.transform.translate(12f,1.25f,9f);
+
+        routerModel = new ModelInstance(modelLoader.loadModel(Gdx.files.internal("router/router.obj")));
+        routerModel.transform.translate(0f,-2.5f,0f);
+        routerModel.transform.rotate(180,0,0,180);
+
+
     }
     @Override
-    public void createButtons(){
+    public void createButtonsAndLabels(){
         backButton = new TextButton("Back", guiSkin);
         randButton = new TextButton("Rzut kostkami", guiSkin);
+        counterLabel = new Label("10:00",guiSkin);
 
     }
     @Override
@@ -236,7 +315,7 @@ public class ApplicationScreen implements Screen,BasicFunctions {
             public void changed(ChangeEvent event, Actor actor) {
                 randButton.setDisabled(true);
                 int num = new Random().nextInt(11)+2;
-                //int num =1;
+                //int num =20;
                 Player tmp = getActivePlayer();
                 tmp.move(num);
                 //nextPlayer();
@@ -245,6 +324,21 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         actionWindow.getExitButton().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if(timerRun==false)
+                    System.exit(0);
+                Field currentField = setOfFields.get(getActivePlayer().getPawn().getCurrentFiledIndex());
+                if(currentField.getFieldType()==Field.type.specialCard){
+                    SpecialCard tmpCard = setOfCards.get(GameActionWindow.specialCardIndex);
+                    if(tmpCard.getCardAction()==SpecialCard.action.moveForward){
+                        getActivePlayer().move(tmpCard.getMoneyChange());
+                    }
+                    else if(tmpCard.getCardAction()==SpecialCard.action.goStart){
+                        getActivePlayer().move(40-getActivePlayer().getPawn().getCurrentFiledIndex());
+                        randButton.setDisabled(false);
+                        actionWindow.getWindow().setVisible(false);
+                        return;
+                    }
+                }
                 randButton.setDisabled(false);
                 actionWindow.getWindow().setVisible(false);
                 nextPlayer();
@@ -253,18 +347,74 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         actionWindow.getBuyButton().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                Field currentField = setOfFields.get(getActivePlayer().getPawn().getCurrentFiledIndex());
+                if(currentField.getOwner()!=null){
+                    if(getActivePlayer().getMoney()>=currentField.getPrice()*1.8) {
+                        changeCubeColor(currentField);
+                        randButton.setDisabled(false);
+                        actionWindow.getWindow().setVisible(false);
 
+                        currentField.getOwner().updateThisPlayerMoney((int) (currentField.getPrice()*1.8));
+
+                        currentField.setOwner(getActivePlayer());
+
+                        getActivePlayer().updateMoney((int) (-currentField.getPrice()*1.8));
+
+                    }
+                    if(currentField.getFieldType()==Field.type.winFields &&
+                            setOfFields.get(5).getOwner()==getActivePlayer() &&
+                            setOfFields.get(15).getOwner()==getActivePlayer() &&
+                            setOfFields.get(25).getOwner()==getActivePlayer() &&
+                            setOfFields.get(35).getOwner()==getActivePlayer()) {
+                        GameActionWindow.showWindow();
+                        actionWindow.showWinWindow(getActivePlayer());
+                    }
+                    nextPlayer();
+                }
+                else{
+                    if(getActivePlayer().getMoney()>=currentField.getPrice()){
+
+                        changeCubeColor(currentField);
+                        randButton.setDisabled(false);
+                        actionWindow.getWindow().setVisible(false);
+                        currentField.setOwner(getActivePlayer());
+                        getActivePlayer().updateMoney(-currentField.getPrice());
+                        nextPlayer();
+                    }
+                }
+
+            }
+        });
+        actionWindow.getGiveUpButton().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                randButton.setDisabled(false);
+                actionWindow.getWindow().setVisible(false);
+                playerGiveUp(getActivePlayer());
+                nextPlayer();
+            }
+        });
+        actionWindow.getPayFineButton().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Field currentField = setOfFields.get(getActivePlayer().getPawn().getCurrentFiledIndex());
+                if(getActivePlayer().getMoney()>=currentField.getPrice()){
+
+
+
+                    randButton.setDisabled(false);
+                    actionWindow.getWindow().setVisible(false);
+                    getActivePlayer().updateMoney(-currentField.getPrice());
+                    currentField.getOwner().updateThisPlayerMoney(currentField.getPrice());
+                    nextPlayer();
+                }
             }
         });
     }
 
     @Override
     public void tableAndStageConfiguration() {
-        topLeftTable.setDebug(true);
-        topRightTable.setDebug(true);
-        bottomRightTable.setDebug(true);
-        bottomLeftTable.setDebug(true);
-        topTable.setDebug(true);
+
 
         stage.addActor(topLeftTable);
         topLeftTable.align(Align.topLeft);
@@ -286,14 +436,21 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         centerTable.align(Align.center);
         centerTable.add(actionWindow.getWindow());
 
+
         stage.addActor(topTable);
         topTable.align(Align.top);
         topTable.add(randButton);
+
+        stage.addActor(bottomCenterTable);
+        bottomCenterTable.align(Align.bottom);
+        bottomCenterTable.add(counterLabel).padBottom(30);
+
+
     }
     private void addPlayers(){
         playersList = new ArrayList<>();
         for(int i=0;i<Engine.playerNumber;i++)
-            playersList.add(new Player(Engine.playerNames.get(i),i+1));
+            playersList.add(new Player(Engine.playerNames.get(i),i+1,this,pawnsModels.get(i),i));
     }
     private void playerConfig(){
         switch (Engine.playerNumber){
@@ -326,92 +483,82 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         return null;
     }
 
-    public Player getNextPlayer(){
-        for(int i=0;i<Engine.playerNumber;i++){
-            if(playersInfoList.get(i).getActiveValues()){
-                if(i==Engine.playerNumber-1)
-                    return playersList.get(0);
-                else
-                    return playersList.get(i+1);
-            }
-        }
-        return null;
-    }
-    private void nextPlayer(){
-        for(int i=0;i<Engine.playerNumber;i++){
-            if(playersInfoList.get(i).getActiveValues()){
-                playersInfoList.get(i).setActiveValues(false);
-                if(i==Engine.playerNumber-1){
-                    playersInfoList.get(0).setActiveValues(true);
-                    return;
-                }
-                else{
-                    playersInfoList.get(i+1).setActiveValues(true);
-                    return;
+    public void nextPlayer(){
+        do {
+            for (int i = 0; i < Engine.playerNumber; i++) {
+                if (playersInfoList.get(i).getActiveValues()) {
+                    playersInfoList.get(i).setActiveValues(false);
+                    if (i == Engine.playerNumber - 1) {
+                        playersInfoList.get(0).setActiveValues(true);
+                        break;
+                    } else {
+                        playersInfoList.get(i + 1).setActiveValues(true);
+                        break;
+                    }
                 }
             }
-        }
+        }while (getActivePlayer().isInGame()==false);
     }
     void initSetOfCards(){
         setOfCards = new ArrayList<>();
-        setOfCards.add(new SpecialCard("Znalazles na przerwie troche pieniedzy. Otrzymujesz 50 PsKc.",50,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Pomogles koledze z roku nizej za drobna oplata. Otrzymujesz 100 PsKc.",100,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Wygrales konkurs w swoim wydziale. Otrzymujesz 200 PsKc.",200,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Poruszasz sie w przod.",0,SpecialCard.fromOp.noAction,SpecialCard.toOp.noAction,SpecialCard.action.moveForward));
-        setOfCards.add(new SpecialCard("Skontaktuj sie z wykladowca w celu odrobienia zajec. Placisz 50 PsKc.",-50,SpecialCard.fromOp.fromMe,SpecialCard.toOp.toBank,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Oblales egzamin. Przyjdz na poprawke. Placisz 100 PsKc.",-100,SpecialCard.fromOp.fromMe,SpecialCard.toOp.toBank,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Uciekles z zajec. Wracasz do domu odpoczac. Udaj sie na START. Pobierz 200 PsKc.",0,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.goStart));
-        setOfCards.add(new SpecialCard("Chodzac na uczelnie mozesz wygrac lub przegrac. \nNie ma trzeciej opcji. Pobierasz 150 PsKc.",150,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Mianowano Cie Starosta grupy. Pobierasz 20 PsKc od kazdego gracza.",20,SpecialCard.fromOp.fromEveryone,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Mianowano Cie Starosta roku. Pobierasz 50 PsKc od kazdego gracza.",50,SpecialCard.fromOp.fromEveryone,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Zaaranzuj spotkanie twojego wydzialu, w celu przemyslenia taktyki. Placisz 100 PsKc.",-100,SpecialCard.fromOp.fromMe,SpecialCard.toOp.toBank,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Poruszasz sie o 3 pola.",0,SpecialCard.fromOp.noAction,SpecialCard.toOp.noAction,SpecialCard.action.moveForward));
-        setOfCards.add(new SpecialCard("Twoja siedziba zostala zlupiona. Placisz 50 PsKc.",-50,SpecialCard.fromOp.fromMe,SpecialCard.toOp.toBank,SpecialCard.action.noAction));
-        setOfCards.add(new SpecialCard("Twoj promotor daje Ci cenna rade. Pobierasz 12 PsKc.",12,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Znalazles na przerwie troche pieniedzy.\n Otrzymujesz 50 PsKc.",50,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Pomogles koledze z roku nizej za drobna\n oplata. Otrzymujesz 100 PsKc.",100,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Wygrales konkurs w swoim wydziale. \nOtrzymujesz 200 PsKc.",200,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Poruszasz sie w przod.",1,SpecialCard.fromOp.noAction,SpecialCard.toOp.noAction,SpecialCard.action.moveForward));
+        setOfCards.add(new SpecialCard("Skontaktuj sie z wykladowca w celu\n odrobienia zajec. Placisz 50 PsKc.",-50,SpecialCard.fromOp.fromMe,SpecialCard.toOp.toBank,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Oblales egzamin. Przyjdz na poprawke.\n Placisz 100 PsKc.",-100,SpecialCard.fromOp.fromMe,SpecialCard.toOp.toBank,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Uciekles z zajec. Wracasz do domu odpoczac.\n Udaj sie na START. Pobierz 200 PsKc.",0,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.goStart));
+        setOfCards.add(new SpecialCard("Chodzac na uczelnie mozesz wygrac lub \nprzegrac. Nie ma trzeciej opcji.\n Pobierasz 150 PsKc.",150,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Mianowano Cie Starosta grupy. Pobierasz\n 20 PsKc od kazdego gracza.",20,SpecialCard.fromOp.fromEveryone,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Mianowano Cie Starosta roku. Pobierasz 50 PsKc\n od kazdego gracza.",50,SpecialCard.fromOp.fromEveryone,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Zaaranzuj spotkanie twojego wydzialu,\n w celu przemyslenia taktyki.\n Placisz 100 PsKc.",-100,SpecialCard.fromOp.fromMe,SpecialCard.toOp.toBank,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Poruszasz sie o 3 pola.",3,SpecialCard.fromOp.noAction,SpecialCard.toOp.noAction,SpecialCard.action.moveForward));
+        setOfCards.add(new SpecialCard("Twoja siedziba zostala zlupiona. \nPlacisz 50 PsKc.",-50,SpecialCard.fromOp.fromMe,SpecialCard.toOp.toBank,SpecialCard.action.noAction));
+        setOfCards.add(new SpecialCard("Twoj promotor daje Ci cenna rade. \nPobierasz 12 PsKc.",12,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
 
     }
     void initFields(){
         setOfFields = new ArrayList<>();
-        setOfFields.add(new Field("Start",0,Field.type.start));
-        setOfFields.add(new Field("Biblioteka",50,Field.type.normalField));
-        setOfFields.add(new Field("Karta specjalna",0, Field.type.specialCard));
-        setOfFields.add(new Field("Hala sportowa",75,Field.type.normalField));
-        setOfFields.add(new Field("Podatek od zubozenia",200,Field.type.tax));
-        setOfFields.add(new Field("Rektorat",200,Field.type.winFields));
-        setOfFields.add(new Field("Sala 2.08A",100, Field.type.normalField));
-        setOfFields.add(new Field("Karta specjalna",0,Field.type.specialCard));
-        setOfFields.add(new Field("Sala 1.03A",100, Field.type.normalField));
-        setOfFields.add(new Field("Sala 1.06A",150, Field.type.normalField));
-        setOfFields.add(new Field("Wycieczka",0,Field.type.wycieczka));
-        setOfFields.add(new Field("Sala 3.14B",200, Field.type.normalField));
-        setOfFields.add(new Field("Uczelniana elektrownia",150,Field.type.twoOfThem));
-        setOfFields.add(new Field("Sala 1.09HB",200,Field.type.normalField));
-        setOfFields.add(new Field("Sala 1.06B",250,Field.type.normalField));
-        setOfFields.add(new Field("Piramidy",200,Field.type.winFields));
-        setOfFields.add(new Field("Sala 1.10B",275,Field.type.normalField));
-        setOfFields.add(new Field("Karta specjalna",0, Field.type.specialCard));
-        setOfFields.add(new Field("Sala 3.04B",275,Field.type.normalField));
-        setOfFields.add(new Field("Sala 1.02HCL",325,Field.type.normalField));
-        setOfFields.add(new Field("Darmowy parking",0,Field.type.parking));
-        setOfFields.add(new Field("Sala 3.11C",350,Field.type.normalField));
-        setOfFields.add(new Field("Karta specjalna",0,Field.type.specialCard));
-        setOfFields.add(new Field("Sala 3.17C",350,Field.type.normalField));
-        setOfFields.add(new Field("Audytorium 1.20",375,Field.type.normalField));
-        setOfFields.add(new Field("Boisko",200,Field.type.winFields));
-        setOfFields.add(new Field("Sala 2.32C",400, Field.type.normalField));
-        setOfFields.add(new Field("Sala 2.06C",400, Field.type.normalField));
-        setOfFields.add(new Field("Uczelniane wodociagi",150,Field.type.twoOfThem));
-        setOfFields.add(new Field("Audytorium 1.15",450, Field.type.normalField));
-        setOfFields.add(new Field("Polibus",0, Field.type.polibus));
-        setOfFields.add(new Field("Sala 1.20D",475, Field.type.normalField));
-        setOfFields.add(new Field("Sala 3.26D",475, Field.type.normalField));
-        setOfFields.add(new Field("Karta specjalna",0,Field.type.specialCard));
-        setOfFields.add(new Field("Sala 4.11D",525, Field.type.normalField));
-        setOfFields.add(new Field("Energis",200,Field.type.winFields));
-        setOfFields.add(new Field("Karta specjalna",0,Field.type.specialCard));
-        setOfFields.add(new Field("Aula glowna 3",500, Field.type.normalField));
-        setOfFields.add(new Field("Podatek od nauki",300,Field.type.tax));
-        setOfFields.add(new Field("Aula glowna 3",550, Field.type.normalField));
+        setOfFields.add(new Field("Start",0,Field.type.start,0));
+        setOfFields.add(new Field("Biblioteka",50,Field.type.normalField,1));
+        setOfFields.add(new Field("Karta specjalna",0, Field.type.specialCard,2));
+        setOfFields.add(new Field("Hala sportowa",75,Field.type.normalField,3));
+        setOfFields.add(new Field("Podatek od zubozenia",200,Field.type.tax,4));
+        setOfFields.add(new Field("Rektorat",200,Field.type.winFields,5));
+        setOfFields.add(new Field("Sala 2.08A",100, Field.type.normalField,6));
+        setOfFields.add(new Field("Karta specjalna",0,Field.type.specialCard,7));
+        setOfFields.add(new Field("Sala 1.03A",100, Field.type.normalField,8));
+        setOfFields.add(new Field("Sala 1.06A",150, Field.type.normalField,9));
+        setOfFields.add(new Field("Wycieczka",0,Field.type.trip,10));
+        setOfFields.add(new Field("Sala 3.14B",200, Field.type.normalField,11));
+        setOfFields.add(new Field("Uczelniana elektrownia",150,Field.type.twoOfThem,12));
+        setOfFields.add(new Field("Sala 1.09HB",200,Field.type.normalField,13));
+        setOfFields.add(new Field("Sala 1.06B",250,Field.type.normalField,14));
+        setOfFields.add(new Field("Piramidy",200,Field.type.winFields,15));
+        setOfFields.add(new Field("Sala 1.10B",275,Field.type.normalField,16));
+        setOfFields.add(new Field("Karta specjalna",0, Field.type.specialCard,17));
+        setOfFields.add(new Field("Sala 3.04B",275,Field.type.normalField,18));
+        setOfFields.add(new Field("Sala 1.02HCL",325,Field.type.normalField,19));
+        setOfFields.add(new Field("Darmowy parking",0,Field.type.parking,20));
+        setOfFields.add(new Field("Sala 3.11C",350,Field.type.normalField,21));
+        setOfFields.add(new Field("Karta specjalna",0,Field.type.specialCard,22));
+        setOfFields.add(new Field("Sala 3.17C",350,Field.type.normalField,23));
+        setOfFields.add(new Field("Audytorium 1.20",375,Field.type.normalField,24));
+        setOfFields.add(new Field("Boisko",200,Field.type.winFields,25));
+        setOfFields.add(new Field("Sala 2.32C",400, Field.type.normalField,26));
+        setOfFields.add(new Field("Sala 2.06C",400, Field.type.normalField,27));
+        setOfFields.add(new Field("Uczelniane wodociagi",150,Field.type.twoOfThem,28));
+        setOfFields.add(new Field("Audytorium 1.15",450, Field.type.normalField,29));
+        setOfFields.add(new Field("Polibus",0, Field.type.polibus,30));
+        setOfFields.add(new Field("Sala 1.20D",475, Field.type.normalField,31));
+        setOfFields.add(new Field("Sala 3.26D",475, Field.type.normalField,32));
+        setOfFields.add(new Field("Karta specjalna",0,Field.type.specialCard,33));
+        setOfFields.add(new Field("Sala 4.11D",525, Field.type.normalField,34));
+        setOfFields.add(new Field("Energis",200,Field.type.winFields,35));
+        setOfFields.add(new Field("Karta specjalna",0,Field.type.specialCard,36));
+        setOfFields.add(new Field("Aula glowna 3",500, Field.type.normalField,37));
+        setOfFields.add(new Field("Podatek od nauki",300,Field.type.tax,38));
+        setOfFields.add(new Field("Aula glowna 3",550, Field.type.normalField,39));
 
     }
 
@@ -421,5 +568,178 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
     public ArrayList<Player> getPlayersList() {
         return playersList;
+    }
+
+    private void createCubes(){
+        cubeInstance = new HashMap<>();
+        ModelBuilder tmpBuilder = new ModelBuilder();
+            System.out.println("d1");
+            cubeInstance.put(1,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(3,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(5,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(6,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(8,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(9,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(11,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(12,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(13,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(14,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(15,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(16,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(18,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(19,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(21,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(23,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(24,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(25,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(26,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(27,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(28,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(29,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(31,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(32,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(34,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(35,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(37,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+            cubeInstance.put(39,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+    }
+    private void loadPawnModels() {
+        ModelLoader loader = new ObjLoader();
+        pawnsModels = new ArrayList<>();
+        pawnsModels.add(loader.loadModel(Gdx.files.internal("pawns/red_pawn.obj")));
+        pawnsModels.add(loader.loadModel(Gdx.files.internal("pawns/blue_pawn.obj")));
+        pawnsModels.add(loader.loadModel(Gdx.files.internal("pawns/green_pawn.obj")));
+        pawnsModels.add(loader.loadModel(Gdx.files.internal("pawns/yellow_pawn.obj")));
+    }
+    private void initCubePos(){
+
+       cubeInstance.get(1).transform.translate(cubePos.get(1));
+       cubeInstance.get(3).transform.translate(cubePos.get(3));
+       cubeInstance.get(5).transform.translate(cubePos.get(5));
+       cubeInstance.get(6).transform.translate(cubePos.get(6));
+       cubeInstance.get(8).transform.translate(cubePos.get(8));
+       cubeInstance.get(9).transform.translate(cubePos.get(9));
+       cubeInstance.get(11).transform.translate(cubePos.get(11));
+
+       cubeInstance.get(12).transform.translate(cubePos.get(12));
+       cubeInstance.get(13).transform.translate(cubePos.get(13));
+       cubeInstance.get(14).transform.translate(cubePos.get(14));
+       cubeInstance.get(15).transform.translate(cubePos.get(15));
+       cubeInstance.get(16).transform.translate(cubePos.get(16));
+       cubeInstance.get(18).transform.translate(cubePos.get(18));
+       cubeInstance.get(19).transform.translate(cubePos.get(19));
+
+        cubeInstance.get(21).transform.translate(cubePos.get(21));
+        cubeInstance.get(23).transform.translate(cubePos.get(23));
+        cubeInstance.get(24).transform.translate(cubePos.get(24));
+        cubeInstance.get(25).transform.translate(cubePos.get(25));
+        cubeInstance.get(26).transform.translate(cubePos.get(26));
+        cubeInstance.get(27).transform.translate(cubePos.get(27));
+        cubeInstance.get(28).transform.translate(cubePos.get(28));
+        cubeInstance.get(29).transform.translate(cubePos.get(29));
+
+        cubeInstance.get(31).transform.translate(cubePos.get(31));
+        cubeInstance.get(32).transform.translate(cubePos.get(32));
+        cubeInstance.get(34).transform.translate(cubePos.get(34));
+        cubeInstance.get(35).transform.translate(cubePos.get(35));
+        cubeInstance.get(37).transform.translate(cubePos.get(37));
+        cubeInstance.get(39).transform.translate(cubePos.get(39));
+
+    }
+    private void createCubePos(){
+        cubePos = new HashMap<>();
+        cubePos.put(1,new Vector3(12.2f,1,13.6f));
+        cubePos.put(3,new Vector3(5.9f,1,13.6f));
+        cubePos.put(5,new Vector3(-0.2f,1,13.6f));
+        cubePos.put(6,new Vector3(-3.2f,1,13.6f));
+        cubePos.put(8,new Vector3(-9.4f,1,13.6f));
+        cubePos.put(9,new Vector3(-12.5f,1,13.6f));
+        cubePos.put(11,new Vector3(-13.6f,1,12.5f));
+        cubePos.put(12,new Vector3(-13.6f,1,9.4f));
+        cubePos.put(13,new Vector3(-13.6f,1,6.3f));
+        cubePos.put(14,new Vector3(-13.6f,1,3.3f));
+        cubePos.put(15,new Vector3(-13.6f,1,0.2f));
+        cubePos.put(16,new Vector3(-13.6f,1,-3.0f));
+        cubePos.put(18,new Vector3(-13.6f,1,-9.2f));
+        cubePos.put(19,new Vector3(-13.6f,1,-12.2f));
+        cubePos.put(21,new Vector3(-12.5f,1,-13.3f));
+        cubePos.put(23,new Vector3(-6.1f,1,-13.3f));
+        cubePos.put(24,new Vector3(-3.2f,1,-13.3f));
+        cubePos.put(25,new Vector3(-0.2f,1,-13.3f));
+        cubePos.put(26,new Vector3(2.9f,1,-13.3f));
+        cubePos.put(27,new Vector3(5.9f,1,-13.3f));
+        cubePos.put(28,new Vector3(9.0f,1,-13.3f));
+        cubePos.put(29,new Vector3(12.2f,1,-13.3f));
+        cubePos.put(31,new Vector3(13.3f,1,-12.2f));
+        cubePos.put(32,new Vector3(13.3f,1,-9.2f));
+        cubePos.put(34,new Vector3(13.3f,1,-3.0f));
+        cubePos.put(35,new Vector3(13.3f,1, 0.2f));
+        cubePos.put(37,new Vector3(13.3f,1, 6.3f));
+        cubePos.put(39,new Vector3(13.3f,1, 12.5f));
+
+    }
+
+    void changeCubeColor(Field currentField){
+        switch (getActivePlayer().getId()){
+            case 0:
+                cubeInstance.replace(currentField.getId(), new ModelInstance(new ModelBuilder().createBox(1f,1f,1f,
+                        new Material(ColorAttribute.createDiffuse(Color.RED)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+                break;
+            case 1:
+                cubeInstance.replace(currentField.getId(), new ModelInstance(new ModelBuilder().createBox(1f,1f,1f,
+                        new Material(ColorAttribute.createDiffuse(Color.BLUE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+                break;
+            case 2:
+                cubeInstance.replace(currentField.getId(), new ModelInstance(new ModelBuilder().createBox(1f,1f,1f,
+                        new Material(ColorAttribute.createDiffuse(Color.GREEN)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+                break;
+            case 3:
+                cubeInstance.replace(currentField.getId(), new ModelInstance(new ModelBuilder().createBox(1f,1f,1f,
+                        new Material(ColorAttribute.createDiffuse(Color.YELLOW)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+                break;
+        }
+        cubeInstance.get(currentField.getId()).transform.translate(cubePos.get(currentField.getId()));
+    }
+
+    private void playerGiveUp(Player player){
+        int i=0;
+        player.setInGame(false);
+        player.getPawn().setPawnVisable(false);
+        for (PlayerInfoTable p:playersInfoList) {
+            if(p.getPlayer()==player)
+                p.setVisible(false);
+        }
+        for (Field f:setOfFields){
+            if(f.getOwner()==player){
+                f.setOwner(null);
+                cubeInstance.replace(i,new ModelInstance(new ModelBuilder().createBox(1f,1f,1f,
+                        new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
+                cubeInstance.get(i).transform.translate(cubePos.get(f.getId()));
+            }
+            i++;
+        }
+
+    }
+    public void updateTimer(){
+        if(timerRun){
+            currentTime=LocalDateTime.now();
+            Integer tmp = Math.toIntExact(ChronoUnit.SECONDS.between(startTime, currentTime));
+            minutes = tmp/60;
+            tmp-=minutes*60;
+            seconds = tmp;
+
+            counterLabel.setText((19-minutes)+":"+(59-seconds));
+            if(19-minutes==0&&59-seconds==0)
+            {
+                timerRun=false;
+               actionWindow.showWinWindow();
+            }
+        }
+
+
+    }
+
+    public TextButton getRandButton() {
+        return randButton;
     }
 }

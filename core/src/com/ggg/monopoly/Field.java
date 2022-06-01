@@ -1,13 +1,15 @@
 package com.ggg.monopoly;
 
 public class Field {
-    public enum type {start,wycieczka,parking,polibus,specialCard,winFields,normalField,tax,twoOfThem};
+    public enum type {start, trip,parking,polibus,specialCard,winFields,normalField,tax,twoOfThem};
     private String title;
     private Integer price;
     private Player owner;
     private type fieldType;
 
-    public Field(String title, Integer price, type fieldType) {
+    private  Integer id;
+    public Field(String title, Integer price, type fieldType,Integer id) {
+        this.id = id;
         this.title = title;
         this.price = price;
         this.fieldType = fieldType;
@@ -32,5 +34,9 @@ public class Field {
 
     public void setOwner(Player owner) {
         this.owner = owner;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }
