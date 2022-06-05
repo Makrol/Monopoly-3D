@@ -15,6 +15,14 @@ public class Player {
 
     private boolean inGame;
 
+    /**
+     * Konstruktor gracza
+     * @param name nazwa
+     * @param num numer pionka
+     * @param parent klasa nadrzedna
+     * @param pawnModel model pionka
+     * @param id id
+     */
     Player(String name, int num, ApplicationScreen parent, Model pawnModel,Integer id){
         this.id = id;
         this.name = name;
@@ -23,32 +31,61 @@ public class Player {
         this.parent = parent;
         inGame = true;
     }
+
+    /**
+     * Aktualizacja poruszania pionka
+     */
     void update(){
 
         pawn.move();
     }
+
+    /**
+     * Wyświetlanie pionka
+     * @param modelBatch model
+     * @param environment środowisko 3D
+     */
     void render(ModelBatch modelBatch, Environment environment){
         pawn.render(modelBatch,environment);
     }
-    void move(){
-        pawn.startMove();
-    }
+
+    /**
+     * Rozpoczęcie poruszania
+     * @param num ilość pól
+     */
     void move(int num){
        pawn.setMoveCounter(num);
        pawn.startMove();
     }
 
+    /**
+     * Zwraca pionek
+     * @return pionek
+     */
     public Pawn getPawn() {
         return pawn;
     }
 
+    /**
+     * Zwraca imie
+     * @return imie
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Zwraca pieniadze
+     * @return pieniadze
+     */
     public Integer getMoney() {
         return money;
     }
+
+    /**
+     * Zmienia o wartość stan konta aktywnego gracza.
+     * @param val wartość
+     */
     public void updateMoney(Integer val){
         money+=val;
         for (PlayerInfoTable p: parent.getPlayersInfoList()){
@@ -58,6 +95,10 @@ public class Player {
             }
         }
     }
+    /**
+     * Zmienia o wartość stan gracza.
+     * @param val wartość
+     */
     public void updateThisPlayerMoney(Integer val){
         money+=val;
         for (PlayerInfoTable p: parent.getPlayersInfoList()){
@@ -68,14 +109,26 @@ public class Player {
         }
     }
 
+    /**
+     * Zwraca id
+     * @return id
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * Sprawdza czy gracz nie odpadł z gry
+     * @return false jeśli odpadł
+     */
     public boolean isInGame() {
         return inGame;
     }
 
+    /**
+     * Ustala czy glacz jest w grze
+     * @param inGame wartość
+     */
     public void setInGame(boolean inGame) {
         this.inGame = inGame;
 

@@ -23,6 +23,13 @@ public class SettingsScreen implements Screen,BasicFunctions {
 
     private Window window;
     private TextButton backButton;
+
+    /**
+     * Konstruktor scenu
+     * @param engine referencja do klasy nadrzednej
+     * @param guiSkin zestaw tekstur interfajsu
+     * @param debugMode stan trybu debug
+     */
     public SettingsScreen(Engine engine, Skin guiSkin,Boolean debugMode){
         this.debugMode = debugMode;
         this.guiSkin=guiSkin;
@@ -32,11 +39,19 @@ public class SettingsScreen implements Screen,BasicFunctions {
         tableAndStageConfiguration();
         addButtonActions();
     }
+
+    /**
+     * Metoda wywoływania gdy scena zostanie wyświetlona
+     */
     @Override
     public void show() {
         inputDataConfiguration();
     }
 
+    /**
+     * Wyświetlanie sceny
+     * @param delta czas pomiędzy klatkami
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
@@ -46,6 +61,11 @@ public class SettingsScreen implements Screen,BasicFunctions {
 
     }
 
+    /**
+     * Metoda wywoływania podczas zmiany rozmiaru okna
+     * @param width dlugosc
+     * @param height szerokosc
+     */
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);

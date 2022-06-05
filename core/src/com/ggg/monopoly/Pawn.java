@@ -46,6 +46,12 @@ public class Pawn {
 
     private Player parent;
 
+    /**
+     * Konstruktor ladujacy dane do nowo utworzonego obiektu
+     * @param num numer pionka
+     * @param pawnModel model pionka
+     * @param parent klasa nadrzedna
+     */
     public Pawn(int num,Model pawnModel,Player parent){
         this.parent = parent;
         visable =true;
@@ -177,6 +183,10 @@ public class Pawn {
         this.moveCounter = moveCounter;
     }
 
+    /**
+     * Indeks pola na którym stoji gracz
+     * @return indeks
+     */
     public Integer getCurrentFiledIndex() {
         return currentFiledIndex;
     }

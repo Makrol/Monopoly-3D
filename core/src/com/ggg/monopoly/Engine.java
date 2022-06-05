@@ -10,24 +10,40 @@ import java.util.Vector;
 
 
 public class Engine extends Game {
-	private NewGameScreen loadingScreen;
+
+
 	public MenuScreen menuScreen;
+
 	private SettingsScreen settingsScreen;
+
 	private ApplicationScreen applicationScreen;
+
 	private NewGameScreen newGameScreen;
+
 	static private Skin guiSkin;
+
 	static Integer playerNumber=0;
+
 	static Vector<String> playerNames = new Vector<>();
 
+
 	public final static int MENU =0;
+
 	public final static int SETTINGS =1;
+
 	public final static int APPLICATION =2;
+
 	public final static int NEWGAME =3;
+
 	private Screen currentScreen;
+
 	private Boolean debugMode;
 
 	public Sound buttonSound;
 
+	/**
+	 * Inicjalizacja głównych elementów
+	 */
 	@Override
 	public void create () {
 		buttonSound = Gdx.audio.newSound(Gdx.files.internal("sounds/button-click.mp3"));
@@ -39,6 +55,9 @@ public class Engine extends Game {
 		setScreen(menuScreen);
 	}
 
+	/**
+	 * Wyświetlanie obecnie aktywnej sceny
+	 */
 	@Override
 	public void render () {
 
@@ -49,6 +68,11 @@ public class Engine extends Game {
 	public void dispose () {
 
 	}
+
+	/**
+	 * Zmiana wyświetlanej sceny na wskananą
+	 * @param screen numer sceny
+	 */
 	public void changeScreen(int screen){
 		switch (screen){
 			case MENU:
@@ -72,6 +96,11 @@ public class Engine extends Game {
 				this.setScreen(applicationScreen);
 		}
 	}
+
+	/**
+	 * Dostęp do zestawu tekstur interfajsu
+	 * @return zestw tekstur interfejsu
+	 */
 	static public Skin getGuiSkin(){
 		return guiSkin;
 	}

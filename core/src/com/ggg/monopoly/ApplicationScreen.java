@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class ApplicationScreen implements Screen,BasicFunctions {
+
     static public ArrayList<SpecialCard> setOfCards;
     static public ArrayList<Field> setOfFields;
     private Environment environment;
@@ -89,8 +90,11 @@ public class ApplicationScreen implements Screen,BasicFunctions {
     private Boolean timerRun;
 
 
-
-
+    /**
+     * Inicjalizacja głownego okna aplikacji
+     * @param engine referencja do klasy nadrzednej
+     * @param guiSkin zestaw tekstur interfejsu
+     */
     public ApplicationScreen(Engine engine,Skin guiSkin){
 
         createCubes();
@@ -111,18 +115,21 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         tableAndStageConfiguration();
         addButtonActions();
 
-/*
-
-        cubeModel.set(0,new ModelBuilder().createBox(5f,5f,5f,new Material(ColorAttribute.createDiffuse(Color.BLUE)),
-                VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal));
-        cubeInstance.set(0,new ModelInstance(cubeModel.get(0)));*/
     }
+
+    /**
+     *Metoda aktywowana po aktywacji sceny
+     */
     @Override
     public void show() {
 
         inputDataConfiguration();
     }
 
+    /**
+     * Wyświetlanie elementów aplikacji
+     * @param delta czas pomiędzy klatkami
+     */
     @Override
     public void render(float delta) {
         updateTimer();
@@ -152,7 +159,6 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         modelBatch.end();
         stage.draw();
     }
-
     @Override
     public void resize(int width, int height) {
     }
@@ -177,6 +183,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         modelBatch.dispose();
         model.dispose();
     }
+
+    /**
+     * Tworzenie obiektów klasy
+     */
     @Override
     public void createObjects(){
 
@@ -255,6 +265,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
 
     }
+
+    /**
+     * Konfiguracja kamery przestrzeni 3D
+     */
     private void cameraConfiguration(){
         cam.position.set(0f,10f,30f);
         cam.lookAt(0,0,0);
@@ -264,10 +278,18 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         cameraInputController = new CameraInputController(cam);
         cameraInputController.translateButton= Input.Keys.UNKNOWN;
     }
+
+    /**
+     * Konfiguracja środowiska 3D
+     */
     private void environmentConfiguration(){
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight,0.4f,0.4f,0.4f,1f));
         environment.add(new DirectionalLight().set(0.8f,0.8f,0.8f,-1f,-0.8f,-0.2f));
     }
+
+    /**
+     * Ladowanie obiektów 3D
+     */
     private void loading3dObjects(){
         model = modelLoader.loadModel(Gdx.files.internal("plansza/board.obj"));
         modelInstance = new ModelInstance(model);
@@ -288,6 +310,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
 
     }
+
+    /**
+     * Tworzenie przycisków i napisów interfejsu
+     */
     @Override
     public void createButtonsAndLabels(){
         backButton = new TextButton("Back", guiSkin);
@@ -295,6 +321,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         counterLabel = new Label("10:00",guiSkin);
 
     }
+
+    /**
+     * Konfiguracja odbioru sygnałów wejściowych dla środowiska 2D i 3D
+     */
     @Override
     public void inputDataConfiguration(){
         multiplexer.addProcessor(stage);
@@ -302,6 +332,9 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         Gdx.input.setInputProcessor(multiplexer);
     }
 
+    /**
+     * Dodanie akcji dla kliknięcia przycisków
+     */
     @Override
     public void addButtonActions() {
         backButton.addListener(new ChangeListener() {
@@ -315,10 +348,8 @@ public class ApplicationScreen implements Screen,BasicFunctions {
             public void changed(ChangeEvent event, Actor actor) {
                 randButton.setDisabled(true);
                 int num = new Random().nextInt(11)+2;
-                //int num =20;
                 Player tmp = getActivePlayer();
                 tmp.move(num);
-                //nextPlayer();
             }
         });
         actionWindow.getExitButton().addListener(new ChangeListener() {
@@ -412,6 +443,9 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         });
     }
 
+    /**
+     * Konfiguracja układu interfejsu
+     */
     @Override
     public void tableAndStageConfiguration() {
 
@@ -447,11 +481,19 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
 
     }
+
+    /**
+     * Utworzenie nowych graczy
+     */
     private void addPlayers(){
         playersList = new ArrayList<>();
         for(int i=0;i<Engine.playerNumber;i++)
             playersList.add(new Player(Engine.playerNames.get(i),i+1,this,pawnsModels.get(i),i));
     }
+
+    /**
+     * Konfiguracja okienek informacyjnych dla graczy
+     */
     private void playerConfig(){
         switch (Engine.playerNumber){
             case 2:
@@ -474,6 +516,11 @@ public class ApplicationScreen implements Screen,BasicFunctions {
                 break;
         }
     }
+
+    /**
+     * Zwraca aktywnego gracza
+     * @return gracz
+     */
     public Player getActivePlayer(){
         for(int i=0;i<Engine.playerNumber;i++){
             if(playersInfoList.get(i).getActiveValues()){
@@ -483,6 +530,9 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         return null;
     }
 
+    /**
+     * Zmienia ture nastepnego gracza
+     */
     public void nextPlayer(){
         do {
             for (int i = 0; i < Engine.playerNumber; i++) {
@@ -499,6 +549,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
             }
         }while (getActivePlayer().isInGame()==false);
     }
+
+    /**
+     * Konfiguracja informacji o kartach specjalnych
+     */
     void initSetOfCards(){
         setOfCards = new ArrayList<>();
         setOfCards.add(new SpecialCard("Znalazles na przerwie troche pieniedzy.\n Otrzymujesz 50 PsKc.",50,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
@@ -517,6 +571,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         setOfCards.add(new SpecialCard("Twoj promotor daje Ci cenna rade. \nPobierasz 12 PsKc.",12,SpecialCard.fromOp.fromBank,SpecialCard.toOp.toMe,SpecialCard.action.noAction));
 
     }
+
+    /**
+     * Konfiguracja informacji o polach na planszy
+     */
     void initFields(){
         setOfFields = new ArrayList<>();
         setOfFields.add(new Field("Start",0,Field.type.start,0));
@@ -679,6 +737,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
     }
 
+    /**
+     * Zmiana koloru sześcianu na ten który odpowiada właścicielowi pola
+     * @param currentField pole
+     */
     void changeCubeColor(Field currentField){
         switch (getActivePlayer().getId()){
             case 0:
@@ -701,6 +763,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         cubeInstance.get(currentField.getId()).transform.translate(cubePos.get(currentField.getId()));
     }
 
+    /**
+     * Usunięcie gracza który chce sie poddać
+     * @param player gracz
+     */
     private void playerGiveUp(Player player){
         int i=0;
         player.setInGame(false);
@@ -718,8 +784,11 @@ public class ApplicationScreen implements Screen,BasicFunctions {
             }
             i++;
         }
-
     }
+
+    /**
+     * Aktualizuje licznik odmierzający 20min
+     */
     public void updateTimer(){
         if(timerRun){
             currentTime=LocalDateTime.now();
@@ -735,10 +804,12 @@ public class ApplicationScreen implements Screen,BasicFunctions {
                actionWindow.showWinWindow();
             }
         }
-
-
     }
 
+    /**
+     * Zwraca przycisk losujacy ilosc pól
+     * @return przycisk
+     */
     public TextButton getRandButton() {
         return randButton;
     }

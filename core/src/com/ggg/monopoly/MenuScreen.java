@@ -20,6 +20,11 @@ class MenuScreen implements Screen,BasicFunctions {
     private TextButton exitButton;
     private Skin guiSkin;
 
+    /**
+     * Konstruktor sceny menu
+     * @param engine klasa nadrzedna
+     * @param guiSkin zestaw tekstur interfejsu
+     */
     public MenuScreen(Engine engine, Skin guiSkin){
         parent = engine;
         this.guiSkin=guiSkin;
@@ -83,6 +88,10 @@ class MenuScreen implements Screen,BasicFunctions {
         settingsButton = new TextButton("Settings", guiSkin);
         exitButton = new TextButton("Exit", guiSkin);
     }
+
+    /**
+     * Dodanie akcji do naciśnięcia przycisku
+     */
     @Override
     public void addButtonActions(){
         newGameButton.addListener(new ChangeListener() {
@@ -113,11 +122,18 @@ class MenuScreen implements Screen,BasicFunctions {
 
     }
 
+    /**
+     * Tworzenie obiektów
+     */
     @Override
     public void createObjects() {
         stage = new Stage(new ScreenViewport());
         table = new Table();
     }
+
+    /**
+     * Konfiguracje odbierania danych wejściowych
+     */
     @Override
     public void inputDataConfiguration() {
         Gdx.input.setInputProcessor(stage);

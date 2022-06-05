@@ -1,0 +1,222 @@
+{
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	ConcertOne: {
+		file: ConcertOne.fnt
+	}
+}
+com.badlogic.gdx.graphics.Color: {
+	black: {
+		r: 0.5833333
+		g: 0.46902573
+		b: 0.13611111
+		a: 1
+	}
+	cyan: {
+		r: 0
+		g: 1
+		b: 0.99166656
+		a: 1
+	}
+	dark-cyan: {
+		r: 0
+		g: 0.39373153
+		b: 0.4333333
+		a: 1
+	}
+	downButtonColor: {
+		r: 0.6767667
+		g: 0.7748124
+		b: 0.79
+		a: 1
+	}
+	labelColor: {
+		r: 0.24310002
+		g: 0.25842795
+		b: 0.73666674
+		a: 1
+	}
+	textField: {
+		r: 0.07639998
+		g: 0.31728345
+		b: 0.63666666
+		a: 1
+	}
+	upButtonColor: {
+		r: 0.8313333
+		g: 0.9463726
+		b: 0.9666666
+		a: 1
+	}
+	white: {
+		r: 0
+		g: 0
+		b: 0
+		a: 1
+	}
+	windowLabel: {
+		r: 0.64096665
+		g: 0.79558927
+		b: 0.95666665
+		a: 1
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
+	pale-blue: {
+		name: white
+		color: {
+			r: 0.48342222
+			g: 0.76367503
+			b: 0.99333334
+			a: 1
+		}
+	}
+	black: {
+		name: white
+		color: {
+			r: 0
+			g: 0
+			b: 0
+			a: 1
+		}
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
+	default: {
+		checkboxOn: checkBoxOn
+		checkboxOff: checkBoxOff
+		font: ConcertOne
+		fontColor: labelColor
+	}
+	radio: {
+		checkboxOn: radio-button
+		checkboxOff: radio-button-off
+		font: ConcertOne
+		fontColor: white
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	default: {
+		up: imgbuttonup
+		down: imgbuttondown
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: ConcertOne
+		fontColor: labelColor
+	}
+	big: {
+		font: ConcertOne
+	}
+	black: {
+		font: ConcertOne
+		fontColor: black
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
+	default: {
+		font: ConcertOne
+		fontColorSelected: white
+		fontColorUnselected: dark-cyan
+		selection: pale-blue
+		background: list
+	}
+	plain: {
+		font: ConcertOne
+		fontColorSelected: white
+		fontColorUnselected: dark-cyan
+		selection: pale-blue
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
+	default-horizontal: {
+		background: progress-bar
+		knobBefore: progress-bar-knob
+	}
+	default-vertical: {
+		background: progress-bar-vertical
+		knobBefore: progress-bar-knob-vertical
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
+	default: {
+		hScroll: horizontal-scroll-bar
+		hScrollKnob: horizontal-scroll-knob
+		vScroll: vertical-scroll-bar
+		vScrollKnob: vertical-scroll-knob
+	}
+	scroll: {
+		background: list
+		hScroll: horizontal-scroll-bar
+		hScrollKnob: horizontal-scroll-knob
+		vScroll: vertical-scroll-bar
+		vScrollKnob: vertical-scroll-knob
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
+	default: {
+		font: ConcertOne
+		fontColor: dark-cyan
+		background: select-box
+		scrollStyle: default
+		listStyle: plain
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
+	default-horizontal: {
+		background: slider
+		knob: knob
+	}
+	default-vertical: {
+		background: slider
+		knob: slider-knob
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
+	default-horizontal: {
+		handle: horizontal-split-pane
+	}
+	default-vertical: {
+		handle: vertical-split-pane
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	default: {
+		font: ConcertOne
+		fontColor: upButtonColor
+		downFontColor: downButtonColor
+		up: upButton
+		down: downButton
+		pressedOffsetY: -9.11
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
+	default: {
+		font: ConcertOne
+		fontColor: textField
+		background: textField
+		cursor: black
+		selection: pale-blue
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
+	default: {
+		label: black
+		background: list
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Tree$TreeStyle: {
+	default: {
+		plus: plus
+		minus: minus
+		selection: pale-blue
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+	default: {
+		background: dialogWindow
+		titleFont: ConcertOne
+		titleFontColor: windowLabel
+	}
+}
+}

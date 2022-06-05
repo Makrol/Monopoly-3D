@@ -33,6 +33,10 @@ public class GameActionWindow {
 
     static Integer specialCardIndex=0;
 
+    /**
+     * Konstruktor okna dialogowego
+     * @param applicationScreen obiekt nadrzedny
+     */
     GameActionWindow(ApplicationScreen applicationScreen){
 
         this.applicationScreen=applicationScreen;
@@ -48,21 +52,41 @@ public class GameActionWindow {
         //window.setDebug(true);
         initTable();
     }
+
+    /**
+     * Zwraca okno dialogowe
+     * @return okno
+     */
     public Window getWindow(){
         return window;
     }
+
+    /**
+     * Zwraca przycisk wyjscia z okna
+     * @return przycisk
+     */
     public TextButton getExitButton(){
         return exitButton;
     }
 
+    /**
+     * Zwraca przycisk kupowania
+     * @return prezycisk
+     */
     public TextButton getBuyButton() {
         return buyButton;
     }
 
+    /**
+     * Pokazuje okno dialogowe
+     */
     static public void showWindow(){
         window.setVisible(true);
     }
 
+    /**
+     * Laduje dane do okna dialogowego
+     */
     public void loadData(){
 
 
@@ -192,6 +216,10 @@ public class GameActionWindow {
 
 
     }
+
+    /**
+     * Konfiguruje układ elementów okna dialogowego
+     */
     void initTable(){
         buttonTab = new Table(skin);
         text = new Label("to jest test",skin);
@@ -248,12 +276,20 @@ public class GameActionWindow {
         configWinWindow();
 
     }
+
+    /**
+     * Pokazuje okno końca gry
+     */
     public void showWinWindow(){
 
         title.setText("Koniec Gry! \nWygral gracz: "+findWinner().getName());
         configWinWindow();
 
     }
+
+    /**
+     * Konfiguruje okno końca gry
+     */
     private void configWinWindow(){
         window.setVisible(true);
         title.setVisible(true);
@@ -271,6 +307,10 @@ public class GameActionWindow {
         buyButton.setVisible(false);
     }
 
+    /**
+     * Poszukuje gracza który wygrał
+     * @return gracz
+     */
     private Player findWinner(){
         ArrayList<Integer> playerSum = new ArrayList<>();
         int tmp =0;

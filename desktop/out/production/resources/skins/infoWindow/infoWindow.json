@@ -1,0 +1,55 @@
+{
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	ConcertOne: {
+		file: ConcertOne.fnt
+	}
+}
+com.badlogic.gdx.graphics.Color: {
+	downButtonColor: {
+		r: 0.6745098
+		g: 0.77254903
+		b: 0.7882353
+		a: 1
+	}
+	labelColor: {
+		r: 0.30188888
+		g: 0.35499576
+		b: 0.63333344
+		a: 1
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
+	default: {
+		checkboxOn: radioOn
+		checkboxOff: radioOff
+		font: ConcertOne
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: ConcertOne
+		fontColor: labelColor
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	default: {
+		font: ConcertOne
+		downFontColor: downButtonColor
+		up: upButton
+		down: downButton
+		pressedOffsetY: -9.11
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
+	default: {
+		label: default
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+	default: {
+		background: playerInfoWindow
+		titleFont: ConcertOne
+		titleFontColor: labelColor
+	}
+}
+}

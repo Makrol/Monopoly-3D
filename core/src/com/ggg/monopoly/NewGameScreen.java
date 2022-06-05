@@ -82,6 +82,9 @@ public class NewGameScreen implements Screen,BasicFunctions {
 
     }
 
+    /**
+     * Tworzenie obiektów klasy
+     */
     @Override
     public void createObjects() {
         window = new Window("Napis",guiSkin);
@@ -90,6 +93,9 @@ public class NewGameScreen implements Screen,BasicFunctions {
         checkBoxGroupController = new CheckBoxGroupController();
     }
 
+    /**
+     * Tworzenie przycisków i etykiet
+     */
     @Override
     public void createButtonsAndLabels() {
         window = new Window("",guiSkin);
@@ -118,6 +124,9 @@ public class NewGameScreen implements Screen,BasicFunctions {
         checkBoxGroupController.addCheckBox(fourPlayers);
     }
 
+    /**
+     * Dodawanie akcji do przycisków
+     */
     @Override
     public void addButtonActions() {
         backButton.align(Align.topRight);
@@ -170,10 +179,17 @@ public class NewGameScreen implements Screen,BasicFunctions {
         });
     }
 
+    /**
+     * Konfiguracja odbierania danych wejściowych
+     */
     @Override
     public void inputDataConfiguration() {
         Gdx.input.setInputProcessor(stage);
     }
+
+    /**
+     * konfiguracja układu elementów sceny
+     */
     @Override
     public void tableAndStageConfiguration(){
         table.setFillParent(true);
