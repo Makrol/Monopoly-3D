@@ -34,53 +34,56 @@ class MenuScreen implements Screen,BasicFunctions {
         addButtonActions();
 
     }
+
+    /**
+     * Wywolywana kiedy wyswietla sie menu lub newgame
+     */
     @Override
     public void show() {
-
-
         inputDataConfiguration();
-
     }
 
+    /**
+     * Wywoluje sie sama i wyswietla renderowane rzeczy
+     * @param delta Czas w sekundach
+     */
     @Override
     public void render(float delta) {
-
         update();
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
-
     }
 
+    /**
+     * Funkcja wywolujaca sie podczas zmiany okna
+     * @param width Szerokosc
+     * @param height Wysokosc
+     */
     @Override
     public void resize(int width, int height) {
-
         stage.getViewport().update(width, height, true);
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
         stage.dispose();
     }
-    private void update(){
+    private void update(){}
 
-    }
+    /**
+     * Tworzenie przycisków i etykiet interfejsu
+     */
     @Override
     public void createButtonsAndLabels()
     {
@@ -138,10 +141,13 @@ class MenuScreen implements Screen,BasicFunctions {
     public void inputDataConfiguration() {
         Gdx.input.setInputProcessor(stage);
     }
+
+    /**
+     * Konfiguracja tablicy i sceny
+     */
     @Override
     public void tableAndStageConfiguration(){
         table.setFillParent(true);
-
         stage.addActor(table);
         table.setBackground(guiSkin.getDrawable("pale-blue"));
         table.add(newGameButton).fillX().uniformX();

@@ -133,8 +133,4 @@ public class Player {
         this.inGame = inGame;
 
     }
-
-    public ApplicationScreen getParent() {
-        return parent;
-    }
 }

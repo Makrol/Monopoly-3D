@@ -8,12 +8,25 @@ import java.util.ArrayList;
 public class CheckBoxGroupController {
     private ArrayList<CheckBox> checkBoxGroup;
 
+    /**
+     * Konstuktor grupy checkboxow
+     */
     CheckBoxGroupController(){
         checkBoxGroup = new ArrayList<>();
     }
+
+    /**
+     * Dodanie checkboxa do grupy checkboxow
+     * @param checkBox checkbox z grupy checkboxow
+     */
     public void addCheckBox(CheckBox checkBox){
         checkBoxGroup.add(checkBox);
     }
+
+    /**
+     * Wybiera checkboxa
+     * @param checkBox checkbox z grupy checkboxow
+     */
     public void selectCheckBox(CheckBox checkBox){
         for(CheckBox c:checkBoxGroup){
             if(c!=checkBox){
@@ -21,6 +34,10 @@ public class CheckBoxGroupController {
             }
         }
     }
+    /**
+     * Zwraca wybranego checkboxa
+     * @return wybranego checkboxa
+     */
     public CheckBox getSelected(){
         for (CheckBox c:checkBoxGroup){
             if(c.isChecked())

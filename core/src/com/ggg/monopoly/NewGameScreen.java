@@ -34,6 +34,12 @@ public class NewGameScreen implements Screen,BasicFunctions {
     private CheckBoxGroupController checkBoxGroupController;
 
     private Window window;
+
+    /**
+     * Konstruktor ladujacy dane do nowo utworzonego obiektu
+     * @param engine obiekty klasy engine
+     * @param guiSkin Zestawy tekstur interfejsu
+     */
     public NewGameScreen(Engine engine,Skin guiSkin){
 
         this.guiSkin = guiSkin;
@@ -43,12 +49,19 @@ public class NewGameScreen implements Screen,BasicFunctions {
         tableAndStageConfiguration();
         addButtonActions();
     }
+
+    /**
+     * Wywolywana kiedy wyswietla sie menu lub newgame
+     */
     @Override
     public void show() {
         inputDataConfiguration();
 
     }
-
+    /**
+     * Wywoluje sie sama i wyswietla renderowane rzeczy
+     * @param delta Czas w sekundach
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
@@ -56,31 +69,27 @@ public class NewGameScreen implements Screen,BasicFunctions {
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
-
+     /**
+     * Funkcja wywolujaca sie podczas zmiany okna
+     * @param width Szerokosc
+     * @param height Wysokosc
+     */
     @Override
     public void resize(int width, int height) {
 
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
-    public void dispose() {
-
-    }
+    public void dispose() {}
 
     /**
      * Tworzenie obiektów klasy
@@ -197,12 +206,8 @@ public class NewGameScreen implements Screen,BasicFunctions {
         stage.addActor(table);
         table.add(window);
 
-        //table.add(backButton).fillX().uniformX().align(Align.top);
-        //table.add(title);
-
-
         window.row();
-        window.row();//.pad(400,0,400,0);
+        window.row();
         window.add(playersNumber).pad(150,0,0,0);
         window.add(playersNames).pad(150,0,0,0);
         window.row();
@@ -221,14 +226,13 @@ public class NewGameScreen implements Screen,BasicFunctions {
         window.add(backButton).pad(50,100,100,50);
         window.add(startButton).pad(50,50,100,100);
 
-
-       // window.add(threePlayers).fillX().uniformX();
-       // window.add(fourPlayers).fillX().uniformX();
-        //window.row();
-
-
         table.setBackground(guiSkin.getDrawable("pale-blue"));
     }
+
+    /**
+     * Wylaczenie niepotrzebnych pol tekstowych
+     * @param checkBox obiekt typu checkbox
+     */
     void disableUselessTextFields(CheckBox checkBox){
         if(checkBox==null){
             firstPlayerName.setDisabled(true);

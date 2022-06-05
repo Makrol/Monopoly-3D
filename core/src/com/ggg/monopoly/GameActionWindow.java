@@ -46,10 +46,7 @@ public class GameActionWindow {
         buyButton = new TextButton("Kup",skin);
         payFineButton = new TextButton("Zaplac\nkare",skin);
         giveUpButton = new TextButton("Poddaj sie",skin);
-       // window.add(exitButton);
-        //window.align(Align.center);
         window.setVisible(false);
-        //window.setDebug(true);
         initTable();
     }
 
@@ -88,8 +85,6 @@ public class GameActionWindow {
      * Laduje dane do okna dialogowego
      */
     public void loadData(){
-
-
         int playerPos = applicationScreen.getActivePlayer().getPawn().getCurrentFiledIndex();
         System.out.println("dziala"+playerPos);
         Field currentField = ApplicationScreen.setOfFields.get(playerPos);
@@ -97,13 +92,10 @@ public class GameActionWindow {
             applicationScreen.getRandButton().setDisabled(false);
             applicationScreen.nextPlayer();
         }
-
         if(currentField.getFieldType()==Field.type.start){
-
             window.setVisible(false);
             return;
         }
-
 
         if(currentField.getFieldType()==Field.type.normalField&&currentField.getOwner()!=null){
             if(currentField.getOwner()==applicationScreen.getActivePlayer())
@@ -133,8 +125,7 @@ public class GameActionWindow {
         giveUpButton.setVisible(false);
         giveUpButton.setDisabled(true);
 
-        if(currentField.getFieldType()==Field.type.normalField|| currentField.getFieldType()==Field.type.winFields
-                ){
+        if(currentField.getFieldType()==Field.type.normalField|| currentField.getFieldType()==Field.type.winFields){
             owner.setVisible(true);
             title.setText(currentField.getTitle());
             if(currentField.getOwner()== null){
@@ -143,6 +134,10 @@ public class GameActionWindow {
             else{
                 owner.setText("Wlasciciel: "+currentField.getOwner().getName());
             }
+            exitButton.setDisabled(false);
+            exitButton.setVisible(true);
+            giveUpButton.setVisible(true);
+            giveUpButton.setDisabled(false);
             price.setText("Cena: "+currentField.getPrice());
             text.setVisible(false);
             price.setVisible(true);
@@ -159,11 +154,21 @@ public class GameActionWindow {
 
         }else if(currentField.getFieldType()==Field.type.twoOfThem){
             owner.setVisible(true);
-            title.setText(ApplicationScreen.setOfFields.get(playerPos).getTitle());
+            if(currentField.getOwner()== null){
+                owner.setText("Wlasciciel: brak");
+            }
+            else{
+                owner.setText("Wlasciciel: "+currentField.getOwner().getName());
+            }
+            title.setVisible(true);
+            title.setText(currentField.getTitle());
             price.setText("Cena: "+currentField.getPrice());
+            price.setVisible(true);
             text.setVisible(false);
             exitButton.setDisabled(false);
             exitButton.setVisible(true);
+            buyButton.setVisible(true);
+            buyButton.setDisabled(false);
 
         }else if(currentField.getFieldType()==Field.type.specialCard){
 
@@ -207,7 +212,7 @@ public class GameActionWindow {
             title.setVisible(true);
             applicationScreen.getActivePlayer().updateMoney(-ApplicationScreen.setOfFields.get(playerPos).getPrice());
         }else if(currentField.getFieldType()==Field.type.polibus){
-            int tmp =new Random().nextInt(19);
+            int tmp =new Random().nextInt(18);
             applicationScreen.getActivePlayer().move(tmp);
             window.setVisible(false);
         }else if(currentField.getFieldType()==Field.type.parking){
@@ -223,17 +228,13 @@ public class GameActionWindow {
     void initTable(){
         buttonTab = new Table(skin);
         text = new Label("to jest test",skin);
-       // text.setDisabled(true);
-       // text.setSize(400,400);
         table = new Table(skin);
         table.pad(70);
         table.padTop(100);
-        //table.setDebug(true);
         title = new Label("To jetst napis",skin);
         owner = new Label("wlasciciel: ",skin);
         price = new Label("cena: ",skin);
         fine = new Label("kara: ",skin);
-
 
         buttonTab.add(buyButton);
         buttonTab.add(exitButton);
@@ -256,20 +257,28 @@ public class GameActionWindow {
         table.add(buttonTab);
         table.row();
         table.add(giveUpButton).padTop(10);
-
-
-
-
     }
 
+    /**
+     * Zwraca przycisk do zaplaty graczowi
+     * @return przycisk do zaplaty graczowi
+     */
     public TextButton getPayFineButton() {
         return payFineButton;
     }
 
+    /**
+     * Zwraca przycisk do poddania sie
+     * @return przycisk do poddania sie
+     */
     public TextButton getGiveUpButton() {
         return giveUpButton;
     }
 
+    /**
+     * Pokazuje okno końca gry
+     * @param player obiekt gracza
+     */
     public void showWinWindow(Player player){
 
         title.setText("Koniec Gry! \nWygral gracz: "+player.getName());
@@ -299,10 +308,8 @@ public class GameActionWindow {
         fine.setVisible(false);
         giveUpButton.setDisabled(true);
         giveUpButton.setVisible(false);
-
         payFineButton.setDisabled(true);
         payFineButton.setVisible(false);
-
         buyButton.setDisabled(true);
         buyButton.setVisible(false);
     }
@@ -324,7 +331,6 @@ public class GameActionWindow {
             }
             tmp+=applicationScreen.getPlayersList().get(i).getMoney();
             playerSum.add(tmp);
-
         }
         int index=0;
         for(int i=0;i<Engine.playerNumber;i++){

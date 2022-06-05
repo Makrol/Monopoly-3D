@@ -620,14 +620,25 @@ public class ApplicationScreen implements Screen,BasicFunctions {
 
     }
 
+    /**
+     * Zwraca tablice z informacjami gracza
+     * @return tablice z informacjami gracza
+     */
     public ArrayList<PlayerInfoTable> getPlayersInfoList() {
         return playersInfoList;
     }
 
+    /**
+     * Zwraca liste graczy
+     * @return liste graczy
+     */
     public ArrayList<Player> getPlayersList() {
         return playersList;
     }
 
+    /**
+     * Tworzy szesciany odpowiadajace za pokazywanie czyje jest pole na planszy
+     */
     private void createCubes(){
         cubeInstance = new HashMap<>();
         ModelBuilder tmpBuilder = new ModelBuilder();
@@ -661,6 +672,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
             cubeInstance.put(37,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
             cubeInstance.put(39,new ModelInstance(tmpBuilder.createBox(1f,1f,1f, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position| VertexAttributes.Usage.Normal)));
     }
+
+    /**
+     * Laduje modele pionkow
+     */
     private void loadPawnModels() {
         ModelLoader loader = new ObjLoader();
         pawnsModels = new ArrayList<>();
@@ -669,6 +684,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         pawnsModels.add(loader.loadModel(Gdx.files.internal("pawns/green_pawn.obj")));
         pawnsModels.add(loader.loadModel(Gdx.files.internal("pawns/yellow_pawn.obj")));
     }
+
+    /**
+     * Inicjalizuje pozycje szescianow
+     */
     private void initCubePos(){
 
        cubeInstance.get(1).transform.translate(cubePos.get(1));
@@ -704,6 +723,10 @@ public class ApplicationScreen implements Screen,BasicFunctions {
         cubeInstance.get(39).transform.translate(cubePos.get(39));
 
     }
+
+    /**
+     * Tworzenie pozycji dla szescianow
+     */
     private void createCubePos(){
         cubePos = new HashMap<>();
         cubePos.put(1,new Vector3(12.2f,1,13.6f));

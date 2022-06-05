@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 public class Pawn {
     private static Vector3 startPos1 = new Vector3(18.5f,0.7f,18.5f);
-    //private static Vector3 startPos2 = new Vector3(16.923f,0.7f,16.923f);
     private static Vector3 startPos2 = new Vector3(17.5f,0.7f,17.5f);
     private static Vector3 startPos3 = new Vector3(16.5f,0.7f,16.5f);
     private static Vector3 startPos4 = new Vector3(15.5f,0.7f,15.5f);
@@ -33,16 +32,12 @@ public class Pawn {
     private Integer currentFiledIndex;
     private  enum Direction {negativeX,positiveY,positiveX,negativeY};
     private Direction currenDirection;
-    private static final float speed=15f;
+    private static final float speed=12f;
     private boolean isMove;
     private float moveProgress;
     private Integer moveCounter;
 
     private boolean visable;
-
-    public boolean isMove() {
-        return isMove;
-    }
 
     private Player parent;
 
@@ -78,8 +73,6 @@ public class Pawn {
         currentJumpValues = currentBigJump;
         currentFiledIndex = 0;
         currenDirection = Direction.negativeX;
-        //ModelLoader loader = new ObjLoader();
-        //pawn = loader.loadModel(Gdx.files.internal("pawns/blue_pawn.obj"));
         pawnInstance = new ModelInstance(pawn);
         if(num == 1){
             pawnInstance.transform.translate(startPos1);
@@ -98,22 +91,16 @@ public class Pawn {
             bath.render(pawnInstance,environment);
     }
     private void moveDataUpdate(){
-        //Increment position index
         currentFiledIndex++;
         if(currentFiledIndex>39)
         {
             currentFiledIndex=0;
             parent.updateMoney(200);
         }
-
-
-        //Update move values
         if(currentFiledIndex%10==0||(currentFiledIndex+1)%10==0)
             currentJumpValues = currentBigJump;
         else
             currentJumpValues = smallJumpValues;
-
-        //Update move direction
         if(currentFiledIndex%10==0){
             switch (currenDirection){
                 case positiveY:
@@ -130,12 +117,18 @@ public class Pawn {
                     break;
             }
         }
-
-
     }
+
+    /**
+     * Funkcja startujaca ruch
+     */
     public void startMove(){
         isMove = true;
     }
+
+    /**
+     * Funkcja poruszajaca pionka
+     */
     public void move(){
         if(isMove){
             if(moveProgress==currentJumpValues){
@@ -144,7 +137,6 @@ public class Pawn {
                 moveCounter--;
                 if(moveCounter==0) {
                     isMove = false;
-
                     GameActionWindow.showWindow();
                     ApplicationScreen.actionWindow.loadData();
                     return;
@@ -175,10 +167,10 @@ public class Pawn {
         }
     }
 
-    public Integer getMoveCounter() {
-        return moveCounter;
-    }
-
+    /**
+     * Ustawia ilosc pozostalych ruchow
+     * @param moveCounter licznik ruchow
+     */
     public void setMoveCounter(Integer moveCounter) {
         this.moveCounter = moveCounter;
     }
@@ -191,10 +183,10 @@ public class Pawn {
         return currentFiledIndex;
     }
 
-    public void setCurrentFiledIndex(Integer currentFiledIndex) {
-        this.currentFiledIndex = currentFiledIndex;
-    }
-
+    /**
+     * Ustawienie widoczności pionka
+     * @param val wartość
+     */
     public void setPawnVisable(boolean val){
         visable=val;
     }

@@ -72,38 +72,45 @@ public class SettingsScreen implements Screen,BasicFunctions {
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
-    public void dispose() {
+    public void dispose() {}
 
-    }
+    /**
+     * Tworzy obiekty sceny i tabele
+     */
     public void createObjects(){
         stage = new Stage(new ScreenViewport());
         table = new Table();
     }
+
+    /**
+     * Dodaje dane konfiguracyjne
+     */
     public void inputDataConfiguration(){
         Gdx.input.setInputProcessor(stage);
     }
+
+    /**
+     * Tworzy przyciski i etykiety
+     */
     public void createButtonsAndLabels(){
         fullScreen = new CheckBox(" Full Screen",guiSkin);
-
         window = new Window("",guiSkin);
         backButton = new TextButton("Back",guiSkin);
         debugModeAction();
     }
+
+    /**
+     * Dodawanie akcji które zostaną wykonane po naciśnięciu przycisków
+     */
     public void addButtonActions()
     {
         fullScreen.addListener(new ChangeListener() {
@@ -132,12 +139,18 @@ public class SettingsScreen implements Screen,BasicFunctions {
             }
         });
     }
+
+    /**
+     * Akcje dla trybu debugowania
+     */
     private void debugModeAction(){
         table.setDebug(debugMode);
         fullScreen.setDebug(debugMode);
-
     }
 
+    /**
+     * Konfiguracja tablicy i sceny
+     */
     @Override
     public void tableAndStageConfiguration() {
         table.setBackground(guiSkin.getDrawable("pale-blue"));
@@ -145,18 +158,12 @@ public class SettingsScreen implements Screen,BasicFunctions {
         stage.addActor(table);
         table.setTransform(true);
         table.add(window);
-
-
         window.row();
         window.add(new Label("",guiSkin)).pad(120,100,0,0);
         window.add(new Label("",guiSkin)).pad(120,0,0,0);
-
-
         window.row().pad(0,0,15,0);
         window.add(fullScreen).fillX().uniformX().pad(0,100,50,0);
-
         window.row().pad(15,0,0,0);
-
         window.row();
         window.add(backButton).fillX().uniformX().pad(0,100,100,0);
     }
