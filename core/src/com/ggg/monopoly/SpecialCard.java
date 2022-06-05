@@ -1,5 +1,8 @@
 package com.ggg.monopoly;
 
+/**
+ * Klasa reprezentująca karte specjalna ktora moze wylosowac gracz
+ */
 public class SpecialCard {
     public enum fromOp {noAction,fromEveryone,fromMe,fromBank};
     public enum toOp {noAction,toMe,toBank};

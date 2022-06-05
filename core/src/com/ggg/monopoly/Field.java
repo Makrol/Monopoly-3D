@@ -1,5 +1,8 @@
 package com.ggg.monopoly;
 
+/**
+ * Klasa reprezentujaca pole planszy
+ */
 public class Field {
     public enum type {start, trip,parking,polibus,specialCard,winFields,normalField,tax,twoOfThem};
     private String title;

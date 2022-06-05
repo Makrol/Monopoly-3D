@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 
-
+/**
+ * Klasa reprezentujaca okna informacji znajdujace sie p rogach ekranu
+ */
 public class PlayerInfoTable {
     private Window window;
     private static Skin skin = new Skin(Gdx.files.internal("skins/infoWindow/infoWindow.json"));

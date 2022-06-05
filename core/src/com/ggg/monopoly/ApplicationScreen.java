@@ -33,6 +33,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Klasa reprezentujaca glowne okno aplikacje w którym odbywa sie rozgrywka
+ */
 public class ApplicationScreen implements Screen,BasicFunctions {
 
     static public ArrayList<SpecialCard> setOfCards;

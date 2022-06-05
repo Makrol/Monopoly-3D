@@ -13,6 +13,9 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * KLasa reprezentujaca obiekt pionka
+ */
 public class Pawn {
     private static Vector3 startPos1 = new Vector3(18.5f,0.7f,18.5f);
     private static Vector3 startPos2 = new Vector3(17.5f,0.7f,17.5f);

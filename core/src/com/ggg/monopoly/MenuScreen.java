@@ -11,6 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+/**
+ * Klasa reprezentujaca okno a menu gry
+ */
 class MenuScreen implements Screen,BasicFunctions {
     private Engine parent;
     private Stage stage;

@@ -5,6 +5,9 @@ import com.badlogic.gdx.utils.Null;
 
 import java.util.ArrayList;
 
+/**
+ * Kontroler chceckboxow ograniczajacy mozliwosc wyboru do jednego chceckboxa z grupy
+ */
 public class CheckBoxGroupController {
     private ArrayList<CheckBox> checkBoxGroup;
 

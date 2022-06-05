@@ -6,6 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Klasa reprezentujaca okno dialogowe do miedzy innymi kupowania pol
+ */
 public class GameActionWindow {
     static private Window window;
     private Skin skin;

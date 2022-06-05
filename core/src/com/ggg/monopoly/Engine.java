@@ -8,7 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.Vector;
 
-
+/**
+ * Glowna klasa aplikacji zazadzajaca calym programem
+ */
 public class Engine extends Game {
 
 

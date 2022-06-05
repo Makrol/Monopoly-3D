@@ -1,0 +1,48 @@
+
+infoWindow.png
+size: 1024, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+ConcertOne
+  rotate: false
+  xy: 1, 473
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+downButton
+  rotate: false
+  xy: 1, 110
+  size: 375, 150
+  orig: 375, 150
+  offset: 0, 0
+  index: -1
+playerInfoWindow
+  rotate: false
+  xy: 1, 262
+  size: 426, 209
+  orig: 426, 209
+  offset: 0, 0
+  index: -1
+radioOff
+  rotate: false
+  xy: 892, 890
+  size: 95, 95
+  orig: 95, 95
+  offset: 0, 0
+  index: -1
+radioOn
+  rotate: false
+  xy: 515, 738
+  size: 95, 95
+  orig: 95, 95
+  offset: 0, 0
+  index: -1
+upButton
+  rotate: false
+  xy: 515, 835
+  size: 375, 150
+  orig: 375, 150
+  offset: 0, 0
+  index: -1
